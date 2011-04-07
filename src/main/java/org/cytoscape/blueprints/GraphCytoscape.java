@@ -1,5 +1,6 @@
 package org.cytoscape.blueprints;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.cytoscape.model.CyEdge;
@@ -11,16 +12,17 @@ import org.cytoscape.model.CyTable;
 import org.cytoscape.model.SUIDFactory;
 
 import com.tinkerpop.blueprints.pgm.Graph;
+import com.tinkerpop.blueprints.pgm.Vertex;
 import com.tinkerpop.blueprints.pgm.oupls.GraphSource;
 
 public class GraphCytoscape implements GraphSource, CyNetwork {
 
 	private final Graph graph;
 	private final long suid;
-	
+
 	public GraphCytoscape(final Graph graph) {
 		this.graph = graph;
-		
+
 		this.suid = SUIDFactory.getNextSUID();
 	}
 
@@ -42,7 +44,6 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	}
 
 	public CyNode addNode() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -62,8 +63,16 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	}
 
 	public int getNodeCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		final Iterable<Vertex> itr = this.graph.getVertices();
+		if (itr instanceof Collection)
+			return ((Collection<?>) itr).size();
+		else {
+			int count = 0;
+			for (final Vertex vertex : itr)
+				count++;
+
+			return count;
+		}
 	}
 
 	public int getEdgeCount() {
