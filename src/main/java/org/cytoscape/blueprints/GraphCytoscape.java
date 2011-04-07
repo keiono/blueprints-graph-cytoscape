@@ -19,11 +19,14 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 
 	private final Graph graph;
 	private final long suid;
+	
+	private int nodeCount;
 
 	public GraphCytoscape(final Graph graph) {
 		this.graph = graph;
 
 		this.suid = SUIDFactory.getNextSUID();
+		this.nodeCount = 0;
 	}
 
 	public Graph getGraph() {
@@ -44,7 +47,8 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	}
 
 	public CyNode addNode() {
-		return null;
+		final Vertex vertex = graph.addVertex(SUIDFactory.getNextSUID());
+		return new VertexCytoscape(vertex, ++nodeCount);
 	}
 
 	public boolean removeNode(CyNode node) {
