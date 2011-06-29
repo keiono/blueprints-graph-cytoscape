@@ -1,1 +1,3 @@
 Cytoscape ouplementation of Blueprints graph.  This is an OSGi bundle.
+
+Updated on June 29 2011
