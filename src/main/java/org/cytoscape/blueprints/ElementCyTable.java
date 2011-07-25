@@ -83,6 +83,10 @@ public class ElementCyTable implements CyTable {
 	@Override //Needs Type
 	public <T> void createColumn(String columnName, Class<? extends T> type,
 			boolean isImmutable) {
+		if (columnName == null) 
+			throw new NullPointerException("Null Column name");
+		if (type == null) 
+			throw new NullPointerException("Null Column Type");
 		if (getColumn(columnName) != null) {
 			throw new IllegalArgumentException("Column Already Exists.");
 		}
@@ -92,6 +96,10 @@ public class ElementCyTable implements CyTable {
 	@Override //Needs Type
 	public <T> void createListColumn(String columnName,
 			Class<T> listElementType, boolean isImmutable) {
+		if (columnName == null) 
+			throw new NullPointerException("Null Column name");
+		if (listElementType == null) 
+			throw new NullPointerException("Null listElement Type");
 		if (getColumn(columnName) != null) {
 			throw new IllegalArgumentException("Column Already Exists.");
 		}
