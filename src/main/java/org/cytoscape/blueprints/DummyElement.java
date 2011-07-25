@@ -7,10 +7,10 @@ import com.tinkerpop.blueprints.pgm.Element;
 
 public class DummyElement implements Element {
 
-	private Long id;
+	private Object id;
 	private Map<String, Object> propertyMap;
 	
-	DummyElement(Long id) {
+	DummyElement(Object id) {
 		this.id = id;
 	}
 	
