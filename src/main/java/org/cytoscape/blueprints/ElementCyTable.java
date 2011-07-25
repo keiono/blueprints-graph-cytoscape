@@ -18,12 +18,10 @@ public class ElementCyTable implements CyTable {
 	private long suid;
 	private String title;
 	
-	private Graph dummyGraph;
-	
 	private final Map<Long, CyRow> rows;
     private final Map<String, CyColumn> cols;
 	
-	ElementCyTable(long id, String title, Graph graph) {
+	ElementCyTable(long id, String title) {
 		this.suid = id;
 		rows = new HashMap<Long, CyRow>();
 		cols = new HashMap<String, CyColumn>();
@@ -31,7 +29,6 @@ public class ElementCyTable implements CyTable {
 		
 		//Create Primary Key Column
 		createColumn("Primary", Long.class, true);
-		dummyGraph = graph;
 	}
 	
 	@Override
@@ -107,7 +104,7 @@ public class ElementCyTable implements CyTable {
 			throw new NullPointerException("Null Primary Key");
 		}
 		if (rows.get(primaryKey) == null) {
-			ElementCyRow newRow = new ElementCyRow(this, dummyGraph.addVertex(primaryKey));
+			ElementCyRow newRow = new ElementCyRow(this, new DummyElement(primaryKey));
 			addRow(newRow);
 			return newRow;
 		} else {

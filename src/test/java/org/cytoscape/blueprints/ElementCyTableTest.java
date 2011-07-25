@@ -15,11 +15,9 @@ public class ElementCyTableTest extends AbstractCyTableTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		final Graph graph = TinkerGraphFactory.createTinkerGraph();
-		graph.clear();
-		table = new ElementCyTable(1, "Table1", graph);
-		table2 = new ElementCyTable(2, "Table2", graph);
-		attrs = new ElementCyRow(table, graph.addVertex(1));
+		table = new ElementCyTable(1, "Table1");
+		table2 = new ElementCyTable(2, "Table2");
+		attrs = new ElementCyRow(table, new DummyElement(1));
 		eventHelper = new DummyCyEventHelper();
 		rowSetMicroListenerWasCalled = false;
 		rowCreatedMicroListenerWasCalled = false;
