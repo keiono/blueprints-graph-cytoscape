@@ -3,12 +3,15 @@ package org.cytoscape.blueprints;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
+import org.cytoscape.model.CyTable;
+import org.cytoscape.model.SUIDFactory;
 
+import com.tinkerpop.blueprints.pgm.Element;
 import com.tinkerpop.blueprints.pgm.Vertex;
 
 /**
  * Wrapper for Blueprints vertex.
- *
+ *s
  */
 public class VertexCytoscape implements CyNode {
 	
@@ -17,19 +20,22 @@ public class VertexCytoscape implements CyNode {
 	
 	private CyNetwork nestedNetwork;
 	
-	VertexCytoscape(final Vertex vertex, final int index) {
+	private ElementCyRow row;
+	
+	VertexCytoscape(final Vertex vertex, final int index, CyTable table) {
 		this.vertex = vertex;
 		this.index = index;
+		
+		row = new ElementCyRow(table, this.vertex);
 	}
 
 	public CyRow getCyRow(String tableName) {
-		// TODO Auto-generated method stub
-		return null;
+		return row;
 	}
 
 	public CyRow getCyRow() {
 		// TODO Auto-generated method stub
-		return null;
+		return row;
 	}
 
 	public long getSUID() {
