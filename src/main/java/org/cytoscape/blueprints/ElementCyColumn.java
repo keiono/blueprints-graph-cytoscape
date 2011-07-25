@@ -1,8 +1,10 @@
 package org.cytoscape.blueprints;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cytoscape.model.CyColumn;
+import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.model.VirtualColumnInfo;
 
@@ -70,8 +72,11 @@ public class ElementCyColumn implements CyColumn {
 
 	@Override
 	public <T> List<T> getValues(Class<? extends T> type) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<T> result = new ArrayList<T>();
+		for (CyRow row : table.getAllRows()) {
+			result.add(row.get(this.getName(), type));
+		}
+		return result;
 	}
 
 	@Override

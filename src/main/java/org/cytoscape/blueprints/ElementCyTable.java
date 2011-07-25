@@ -83,6 +83,8 @@ public class ElementCyTable implements CyTable {
 	@Override //Needs Type
 	public <T> void createColumn(String columnName, Class<? extends T> type,
 			boolean isImmutable) {
+		if (type == List.class)
+			throw new IllegalArgumentException("Use createListColumn for Lists");
 		if (columnName == null) 
 			throw new NullPointerException("Null Column name");
 		if (type == null) 
