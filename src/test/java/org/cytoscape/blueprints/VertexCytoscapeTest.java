@@ -2,7 +2,6 @@ package org.cytoscape.blueprints;
 
 import static org.junit.Assert.*;
 
-import org.cytoscape.model.AbstractCyNetworkTest;
 import org.cytoscape.model.AbstractCyNodeTest;
 import org.junit.After;
 import org.junit.Before;
