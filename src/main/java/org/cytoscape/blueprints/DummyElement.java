@@ -1,5 +1,6 @@
 package org.cytoscape.blueprints;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ public class DummyElement implements Element {
 	
 	DummyElement(Object id) {
 		this.id = id;
+		this.propertyMap = new HashMap<String, Object>();
 	}
 	
 	@Override
