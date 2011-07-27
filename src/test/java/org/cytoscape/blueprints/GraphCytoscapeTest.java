@@ -3,30 +3,53 @@ package org.cytoscape.blueprints;
 
 import static org.junit.Assert.*;
 
+import java.util.Collections;
+
+import org.cytoscape.model.AbstractCyNetworkTest;
+import org.cytoscape.model.CyEdge;
+import org.cytoscape.model.CyNode;
+import org.cytoscape.model.DummyCyNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.tinkerpop.blueprints.pgm.Graph;
+import com.tinkerpop.blueprints.pgm.Vertex;
 import com.tinkerpop.blueprints.pgm.impls.tg.TinkerGraph;
 import com.tinkerpop.blueprints.pgm.impls.tg.TinkerGraphFactory;
 
-public class GraphCytoscapeTest {
+public class GraphCytoscapeTest extends AbstractCyNetworkTest{
 
-	@Before
+
 	public void setUp() throws Exception {
+		final Graph graph = TinkerGraphFactory.createTinkerGraph();
+		graph.clear();
+		net =  new GraphCytoscape(graph);
 	}
 
-	@After
+	
 	public void tearDown() throws Exception {
 	}
 	
-	@Test
+
 	public void testGraphCytoscape() throws Exception {
-		final Graph graph = TinkerGraphFactory.createTinkerGraph();
-		final GraphCytoscape graphC = new GraphCytoscape(graph);
+		assertNotNull(net);
+	}
+	
+	public void testAddNodeThing() throws Exception {	
 		
-		assertNotNull(graphC);
+		CyNode n1 = net.addNode();
+		CyNode n2 = net.addNode();
+		CyNode n3 = net.addNode();
+
+		// add a directed edge
+		net.addEdge(n1, n1, false);
+		System.out.println(net.getNeighborList(n1, CyEdge.Type.ANY).size());
+		for (CyNode c:net.getNeighborList(n1, CyEdge.Type.ANY)) {
+			System.out.println(c.getIndex());
+		}
+
+
 	}
 
 }

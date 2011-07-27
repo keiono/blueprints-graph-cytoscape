@@ -2,6 +2,7 @@ package org.cytoscape.blueprints;
 
 import static org.junit.Assert.*;
 
+import org.cytoscape.model.AbstractCyNodeTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,14 +10,16 @@ import org.junit.Test;
 import com.tinkerpop.blueprints.pgm.Graph;
 import com.tinkerpop.blueprints.pgm.impls.tg.TinkerGraphFactory;
 
-public class VertexCytoscapeTest {
+public class VertexCytoscapeTest extends AbstractCyNodeTest {
 	
 	private VertexCytoscape node;
 
 	@Before
 	public void setUp() throws Exception {
 		final Graph graph = TinkerGraphFactory.createTinkerGraph();
-		node = new VertexCytoscape(graph.getVertex("1"), 1);
+		graph.clear();
+		net =  new GraphCytoscape(graph);
+		node = new VertexCytoscape(graph.addVertex("1"), 1, net.getDefaultNodeTable());
 	}
 
 	@After
