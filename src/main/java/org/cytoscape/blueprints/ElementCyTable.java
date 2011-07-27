@@ -11,8 +11,6 @@ import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
 
-import com.tinkerpop.blueprints.pgm.Graph;
-
 public class ElementCyTable implements CyTable {
 
 	private long suid;
@@ -183,6 +181,13 @@ public class ElementCyTable implements CyTable {
 	
 	public void renameColumn(String oldName, String newName) {
 		cols.put(newName, cols.remove(oldName));
+	}
+
+
+	@Override
+	public void swap(CyTable otherTable) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

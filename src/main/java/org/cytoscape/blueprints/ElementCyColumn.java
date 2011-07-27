@@ -72,6 +72,8 @@ public class ElementCyColumn implements CyColumn {
 
 	@Override
 	public <T> List<T> getValues(Class<? extends T> type) {
+		if (type == null) 
+			throw new NullPointerException();
 		ArrayList<T> result = new ArrayList<T>();
 		for (CyRow row : table.getAllRows()) {
 			result.add(row.get(this.getName(), type));
