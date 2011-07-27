@@ -37,9 +37,15 @@ public class ElementCyRow implements CyRow {
 
 	@Override
 	public <T> void set(String columnName, T value) {
+		if (columnName == null)
+			throw new NullPointerException("Accessing Null Column");
 		if (table.getColumn(columnName) == null) {
 			throw new IllegalArgumentException("No Such Column");
 		}
+		if (value == null) 
+			ele.removeProperty(columnName);
+		else if ((table.getColumn(columnName).getType() == List.class) && !(value instanceof List))
+			throw new IllegalArgumentException();
 		ele.setProperty(columnName, value);
 	}
 
