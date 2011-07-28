@@ -44,9 +44,9 @@ public class GraphCytoscapeTest extends AbstractCyNetworkTest{
 
 		// add a directed edge
 		net.addEdge(n1, n1, false);
-		System.out.println(net.getNeighborList(n1, CyEdge.Type.ANY).size());
+		//System.out.println(net.getNeighborList(n1, CyEdge.Type.ANY).size());
 		for (CyNode c:net.getNeighborList(n1, CyEdge.Type.ANY)) {
-			System.out.println(c.getIndex());
+			//System.out.println(c.getIndex());
 		}
 
 

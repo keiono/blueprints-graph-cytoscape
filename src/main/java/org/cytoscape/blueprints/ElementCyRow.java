@@ -21,6 +21,10 @@ public class ElementCyRow implements CyRow {
 		
 		// Automatically add the SUID as the Primary Key
 		ele.setProperty(table.getPrimaryKey().getName(), ele.getId());
+		
+		if (!table.rowExists(ele.getId())) {
+			//table.addRow(this);
+		}
 	}
 
 	@Override

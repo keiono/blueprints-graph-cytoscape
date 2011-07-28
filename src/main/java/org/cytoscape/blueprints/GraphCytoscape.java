@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.cytoscape.event.CyEventHelper;
+import org.cytoscape.event.DummyCyEventHelper;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyEdge.Type;
 import org.cytoscape.model.CyNetwork;
@@ -28,6 +30,8 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     
     private int nodeID;
     private int edgeID;
+    
+    private final CyEventHelper eventHelper;
     
     //Node and Edge Maps
     private Map<Integer, CyNode> nodeIndexMap;
@@ -60,23 +64,25 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		edgeTableManager = new HashMap<String, CyTable>();
 	
 		initDefaultTables();
+		
+		this.eventHelper = new DummyCyEventHelper();
     }
 
     private void initDefaultTables() {
     	//Set Default Network Table and Columns
-    	ElementCyTable netTable = new ElementCyTable(SUIDFactory.getNextSUID(), CyNetwork.DEFAULT_ATTRS);
+    	ElementCyTable netTable = new ElementCyTable(SUIDFactory.getNextSUID(), CyNetwork.DEFAULT_ATTRS, eventHelper);
     	netTable.addRow(new ElementCyRow(netTable, new DummyElement(this.getSUID())));
     	netTable.createColumn("name", String.class, true);
     	netTableManager.put(netTable.getTitle(), netTable);
     	
     	//Set Default Node Table and Columns
-    	ElementCyTable nodeTable = new ElementCyTable(SUIDFactory.getNextSUID(),CyNetwork.DEFAULT_ATTRS);
+    	ElementCyTable nodeTable = new ElementCyTable(SUIDFactory.getNextSUID(),CyNetwork.DEFAULT_ATTRS, eventHelper);
     	nodeTable.createColumn("name", String.class, false);
     	nodeTable.createColumn("selected", Boolean.class, false);
     	nodeTableManager.put(nodeTable.getTitle(), nodeTable);
     	
     	//Set Default Edge Table and Columns
-    	ElementCyTable edgeTable = new ElementCyTable(SUIDFactory.getNextSUID(),CyNetwork.DEFAULT_ATTRS);
+    	ElementCyTable edgeTable = new ElementCyTable(SUIDFactory.getNextSUID(),CyNetwork.DEFAULT_ATTRS, eventHelper);
     	edgeTable.createColumn("name", String.class, false);
     	edgeTable.createColumn("selected", Boolean.class, false);
     	edgeTable.createColumn("interaction", String.class, false);

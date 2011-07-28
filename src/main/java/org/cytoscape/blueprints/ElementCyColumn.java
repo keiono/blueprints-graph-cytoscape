@@ -34,8 +34,11 @@ public class ElementCyColumn implements CyColumn {
 	public void setName(String newName) {
 		if (this.isImmutable())
 			throw new IllegalArgumentException("Attempt to rename Immutable Column");
-		table.renameColumn(this.name, newName);
-		this.name = newName;
+		if (newName == null)
+			throw new NullPointerException("Column name cannot be null.");
+		final String oldName = name;
+		name = newName;
+		table.renameColumn(oldName, newName);
 	}
 
 	//Return the Type of the Column

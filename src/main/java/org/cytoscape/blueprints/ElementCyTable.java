@@ -8,20 +8,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
+import org.cytoscape.model.events.ColumnCreatedEvent;
+import org.cytoscape.model.events.ColumnDeletedEvent;
+import org.cytoscape.model.events.RowsCreatedEvent;
 
 public class ElementCyTable implements CyTable {
 
 	private long suid;
 	private String title;
-	private Mutability mutability;
+	private boolean isImmutable;
+	
+	private int virtualColumnReferences;
+	
+	final private CyEventHelper eventHelper;
 	
 	private final Map<Long, CyRow> rows;
     private final Map<String, CyColumn> cols;
 	
-	ElementCyTable(long id, String title) {
+	ElementCyTable(long id, String title, final CyEventHelper eventHelper) {
 		this.suid = id;
 		rows = new HashMap<Long, CyRow>();
 		cols = new HashMap<String, CyColumn>();
@@ -30,7 +38,11 @@ public class ElementCyTable implements CyTable {
 		//Create Primary Key Column
 		createColumn("Primary", Long.class, true);
 		
-		this.mutability = Mutability.MUTABLE;
+		this.isImmutable = false;
+		
+		this.eventHelper = eventHelper;
+		
+		this.virtualColumnReferences = 0;
 	}
 	
 	@Override
@@ -46,7 +58,12 @@ public class ElementCyTable implements CyTable {
 
 	@Override
 	public Mutability getMutability() {
-		return mutability;
+		if (isImmutable)
+			return Mutability.PERMANENTLY_IMMUTABLE;
+		if (virtualColumnReferences == 0)
+			return Mutability.MUTABLE;
+		else
+			return Mutability.IMMUTABLE_DUE_TO_VIRT_COLUMN_REFERENCES;
 	}
 
 	@Override
@@ -78,7 +95,8 @@ public class ElementCyTable implements CyTable {
 	@Override
 	public void deleteColumn(String columnName) {
 		cols.remove(columnName);
-		
+		if (eventHelper != null)
+			eventHelper.fireEvent(new ColumnDeletedEvent(this, columnName));
 	}
 
 	@Override //Needs Type
@@ -100,6 +118,8 @@ public class ElementCyTable implements CyTable {
 				type == String.class) {
 			
 			cols.put(columnName, new ElementCyColumn(this, columnName, isImmutable, type, false));
+			if (eventHelper != null)
+				eventHelper.fireEvent(new ColumnCreatedEvent(this, columnName));
 		} else {
 			throw new IllegalArgumentException("Invalid Column type");
 		}
@@ -121,6 +141,8 @@ public class ElementCyTable implements CyTable {
 			listElementType == Double.class || 
 			listElementType == String.class) {
 				cols.put(columnName, new ElementCyColumn(this, columnName, isImmutable, listElementType, true));
+				if (eventHelper != null)
+					eventHelper.fireEvent(new ColumnCreatedEvent(this, columnName));
 		} else {
 			throw new IllegalArgumentException("Invalid List Column type");
 			
@@ -135,6 +157,7 @@ public class ElementCyTable implements CyTable {
 		if (rows.get(primaryKey) == null) {
 			ElementCyRow newRow = new ElementCyRow(this, new DummyElement(primaryKey));
 			addRow(newRow);
+			eventHelper.addEventPayload((CyTable)this, (Object)primaryKey, RowsCreatedEvent.class);
 			return newRow;
 		} else {
 			return rows.get(primaryKey);
@@ -177,7 +200,7 @@ public class ElementCyTable implements CyTable {
 	public String addVirtualColumn(String virtualColumn, String sourceColumn,
 			CyTable sourceTable, String sourceJoinKey, String targetJoinKey,
 			boolean isImmutable) {
-		this.mutability = Mutability.IMMUTABLE_DUE_TO_VIRT_COLUMN_REFERENCES;
+		++((ElementCyTable)sourceTable).virtualColumnReferences;
 		return null;
 	}
 
@@ -185,8 +208,6 @@ public class ElementCyTable implements CyTable {
 	public void addVirtualColumns(CyTable sourceTable, String sourceJoinKey,
 			String targetJoinKey, boolean isImmutable) {
 		// TODO Auto-generated method stub
-		this.mutability = Mutability.IMMUTABLE_DUE_TO_VIRT_COLUMN_REFERENCES;
-		
 	}
 
 	@Override
@@ -207,22 +228,29 @@ public class ElementCyTable implements CyTable {
 	}
 	
 	public void renameColumn(String oldName, String newName) {
-		cols.put(newName, cols.remove(oldName));
-		/*
 		for (CyRow row : this.getAllRows()) {
-			if (this.getColumn(oldName).getType() == List.class) {
-				row.set(newName, row.getList(oldName,this.getColumn(oldName).getListElementType()));
-			} else {
-				row.set(newName, row.get(oldName,this.getColumn(oldName).getType()));
+			if (this.getColumn(oldName) != null) {
+				if (this.getColumn(oldName).getType() == List.class) {
+					row.set(newName, row.getList(oldName,this.getColumn(oldName).getListElementType()));
+				} else {
+					row.set(newName, row.get(oldName,this.getColumn(oldName).getType()));
+				}
+				row.set(oldName, null);
+				System.out.println(oldName + " " + newName);
 			}
-			row.set(oldName, null);
-		}*/
+		}
+		cols.put(newName, cols.remove(oldName));
 	}
 
 
 	@Override
 	public void swap(CyTable otherTable) {
-		// TODO Auto-generated method stub
+		
+		final ElementCyTable other = (ElementCyTable)otherTable;
+		
+		final String tempTitle = title;
+		title = other.getTitle();
+		other.setTitle(tempTitle);
 		
 	}
 
