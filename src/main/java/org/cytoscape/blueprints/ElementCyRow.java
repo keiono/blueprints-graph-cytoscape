@@ -44,9 +44,10 @@ public class ElementCyRow implements CyRow {
 		}
 		if (value == null) 
 			ele.removeProperty(columnName);
-		else if ((table.getColumn(columnName).getType() == List.class) && !(value instanceof List))
-			throw new IllegalArgumentException();
-		ele.setProperty(columnName, value);
+		else if (!table.getColumn(columnName).getType().isAssignableFrom(value.getClass()))
+			throw new IllegalArgumentException("Values of wrong type" + table.getColumn(columnName).getType() + " vs " + value.getClass() );
+		else
+			ele.setProperty(columnName, value);
 	}
 
 	@Override

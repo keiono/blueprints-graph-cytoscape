@@ -90,9 +90,18 @@ public class ElementCyTable implements CyTable {
 		if (getColumn(columnName) != null) {
 			throw new IllegalArgumentException("Column Already Exists.");
 		}
-		cols.put(columnName, new ElementCyColumn(this, columnName, isImmutable, type, false));
+		if (type == Integer.class || 
+				type == Boolean.class || 
+				type == Long.class || 
+				type == Double.class || 
+				type == String.class) {
+			
+			cols.put(columnName, new ElementCyColumn(this, columnName, isImmutable, type, false));
+		} else {
+			throw new IllegalArgumentException("Invalid Column type");
+		}
 	}
-
+	
 	@Override //Needs Type
 	public <T> void createListColumn(String columnName,
 			Class<T> listElementType, boolean isImmutable) {
