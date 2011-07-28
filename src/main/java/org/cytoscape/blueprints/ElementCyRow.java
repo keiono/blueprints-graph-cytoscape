@@ -18,21 +18,33 @@ public class ElementCyRow implements CyRow {
 	ElementCyRow (final CyTable table, final Element ele) {
 		this.ele = ele;
 		this.table = table;
+		
+		// Automatically add the SUID as the Primary Key
+		ele.setProperty(table.getPrimaryKey().getName(), ele.getId());
 	}
 
 	@Override
 	public <T> T get(String columnName, Class<? extends T> type) {
+		if (table.getColumn(columnName) == null)
+			throw new IllegalArgumentException("No Such Column");
 		Object o = ele.getProperty(columnName); //wrong type, o null
 		return type.cast(o);
 	}
 
 	@Override
 	public <T> List<T> getList(String columnName, Class<T> listElementType) {
+		if (table.getColumn(columnName) == null)
+			throw new IllegalArgumentException("No Such Column");
+		if (table.getColumn(columnName).getType() != List.class)
+			throw new IllegalArgumentException("Not a list, please use get()");
+		if (table.getColumn(columnName).getListElementType() != listElementType)
+			throw new IllegalArgumentException("Invalid List Element Type");
 		Object o = ele.getProperty(columnName); //check valid column
 		if(o instanceof List) {
 			return (List<T>) o;
 		}
-		return Collections.emptyList();
+		//return Collections.emptyList();
+		return null;
 	}
 
 	@Override

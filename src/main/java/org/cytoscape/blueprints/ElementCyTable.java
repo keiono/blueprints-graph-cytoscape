@@ -3,6 +3,7 @@ package org.cytoscape.blueprints;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,7 @@ public class ElementCyTable implements CyTable {
 
 	private long suid;
 	private String title;
+	private Mutability mutability;
 	
 	private final Map<Long, CyRow> rows;
     private final Map<String, CyColumn> cols;
@@ -27,6 +29,8 @@ public class ElementCyTable implements CyTable {
 		
 		//Create Primary Key Column
 		createColumn("Primary", Long.class, true);
+		
+		this.mutability = Mutability.MUTABLE;
 	}
 	
 	@Override
@@ -42,8 +46,7 @@ public class ElementCyTable implements CyTable {
 
 	@Override
 	public Mutability getMutability() {
-		// TODO Auto-generated method stub
-		return null;
+		return mutability;
 	}
 
 	@Override
@@ -112,7 +115,16 @@ public class ElementCyTable implements CyTable {
 		if (getColumn(columnName) != null) {
 			throw new IllegalArgumentException("Column Already Exists.");
 		}
-		cols.put(columnName, new ElementCyColumn(this, columnName, isImmutable, listElementType, true));
+		if (listElementType == Integer.class || 
+			listElementType == Boolean.class || 
+			listElementType == Long.class || 
+			listElementType == Double.class || 
+			listElementType == String.class) {
+				cols.put(columnName, new ElementCyColumn(this, columnName, isImmutable, listElementType, true));
+		} else {
+			throw new IllegalArgumentException("Invalid List Column type");
+			
+		}
 	}
 
 	//Returns the Row with the Specified Key
@@ -147,8 +159,13 @@ public class ElementCyTable implements CyTable {
 
 	@Override
 	public Set<CyRow> getMatchingRows(String columnName, Object value) {
-		// TODO Auto-generated method stub
-		return null;
+		Set<CyRow> matches = new HashSet<CyRow>();
+		for (CyRow row : this.getAllRows()) {
+			if (row.get(columnName, value.getClass()) == value) {
+				matches.add(row);
+			}
+		}
+		return matches;
 	}
 
 	//Return the Number of Rows
@@ -160,7 +177,7 @@ public class ElementCyTable implements CyTable {
 	public String addVirtualColumn(String virtualColumn, String sourceColumn,
 			CyTable sourceTable, String sourceJoinKey, String targetJoinKey,
 			boolean isImmutable) {
-		// TODO Auto-generated method stub
+		this.mutability = Mutability.IMMUTABLE_DUE_TO_VIRT_COLUMN_REFERENCES;
 		return null;
 	}
 
@@ -168,6 +185,7 @@ public class ElementCyTable implements CyTable {
 	public void addVirtualColumns(CyTable sourceTable, String sourceJoinKey,
 			String targetJoinKey, boolean isImmutable) {
 		// TODO Auto-generated method stub
+		this.mutability = Mutability.IMMUTABLE_DUE_TO_VIRT_COLUMN_REFERENCES;
 		
 	}
 
@@ -190,6 +208,15 @@ public class ElementCyTable implements CyTable {
 	
 	public void renameColumn(String oldName, String newName) {
 		cols.put(newName, cols.remove(oldName));
+		/*
+		for (CyRow row : this.getAllRows()) {
+			if (this.getColumn(oldName).getType() == List.class) {
+				row.set(newName, row.getList(oldName,this.getColumn(oldName).getListElementType()));
+			} else {
+				row.set(newName, row.get(oldName,this.getColumn(oldName).getType()));
+			}
+			row.set(oldName, null);
+		}*/
 	}
 
 
