@@ -70,19 +70,19 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 
     private void initDefaultTables() {
     	//Set Default Network Table and Columns
-    	ElementCyTable netTable = new ElementCyTable(SUIDFactory.getNextSUID(), CyNetwork.DEFAULT_ATTRS, eventHelper);
+    	ElementCyTable netTable = new ElementCyTable(SUIDFactory.getNextSUID(), CyNetwork.DEFAULT_ATTRS, eventHelper, false);
     	netTable.addRow(new ElementCyRow(netTable, new DummyElement(this.getSUID())));
     	netTable.createColumn("name", String.class, true);
     	netTableManager.put(netTable.getTitle(), netTable);
     	
     	//Set Default Node Table and Columns
-    	ElementCyTable nodeTable = new ElementCyTable(SUIDFactory.getNextSUID(),CyNetwork.DEFAULT_ATTRS, eventHelper);
+    	ElementCyTable nodeTable = new ElementCyTable(SUIDFactory.getNextSUID(),CyNetwork.DEFAULT_ATTRS, eventHelper, false);
     	nodeTable.createColumn("name", String.class, false);
     	nodeTable.createColumn("selected", Boolean.class, false);
     	nodeTableManager.put(nodeTable.getTitle(), nodeTable);
     	
     	//Set Default Edge Table and Columns
-    	ElementCyTable edgeTable = new ElementCyTable(SUIDFactory.getNextSUID(),CyNetwork.DEFAULT_ATTRS, eventHelper);
+    	ElementCyTable edgeTable = new ElementCyTable(SUIDFactory.getNextSUID(),CyNetwork.DEFAULT_ATTRS, eventHelper, false);
     	edgeTable.createColumn("name", String.class, false);
     	edgeTable.createColumn("selected", Boolean.class, false);
     	edgeTable.createColumn("interaction", String.class, false);

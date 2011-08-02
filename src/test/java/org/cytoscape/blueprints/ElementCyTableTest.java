@@ -17,9 +17,10 @@ public class ElementCyTableTest extends AbstractCyTableTest {
 	@Before
 	public void setUp() throws Exception {
 		eventHelper = new DummyCyEventHelper();
-		table = new ElementCyTable(1, "Table1", eventHelper);
-		table2 = new ElementCyTable(2, "Table2", eventHelper);
-		attrs = new ElementCyRow(table, new DummyElement(1));
+		table = new ElementCyTable(1, "Table1", eventHelper, false);
+		table2 = new ElementCyTable(2, "Table2", eventHelper, false);
+		//attrs = new ElementCyRow(table, new DummyElement(1));
+		attrs = table.getRow(1l);
 		rowSetMicroListenerWasCalled = false;
 		rowCreatedMicroListenerWasCalled = false;
 		rowAboutToBeDeletedMicroListenerWasCalled = false;
@@ -51,7 +52,15 @@ public class ElementCyTableTest extends AbstractCyTableTest {
 		assertNotNull(table.getColumn("testItBetter"));
 		assertNull(table.getColumn("testIt"));
 		assertTrue(testRow.get("testItBetter", Boolean.class));
-		assertNull(testRow.get("testIt", Boolean.class));
+		//assertNull(testRow.get("testIt", Boolean.class));
+	}
+	
+	@Test
+	public void testIsPrimaryKey() {
+		table.createColumn("notPrimary", Boolean.class, true);
+		assertTrue(table.getPrimaryKey().isPrimaryKey());
+		assertFalse(table.getColumn("notPrimary").isPrimaryKey());
+		
 	}
 
 	//What does getMatching Rows do if the object isn't a valid type?

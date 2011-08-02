@@ -15,14 +15,23 @@ public class ElementCyColumn implements CyColumn {
 	private Class<?> type;
 	private boolean isImmutable;
 	private boolean isList;
+	private boolean isPrimary;
+	private ElementVirtualColumnInfo virtInfo;
 	
 	//Constructor
-	ElementCyColumn(ElementCyTable table, String name, boolean isImmutable, Class<?> type, boolean isList) {
+	ElementCyColumn(ElementCyTable table, String name, boolean isImmutable, Class<?> type, boolean isList, ElementVirtualColumnInfo virtInfo) {
 		this.table = table;
-		setName(name);
+		this.name = name;
 		this.isImmutable = isImmutable;
 		this.type = type;
 		this.isList = isList;
+		this.isPrimary = false;
+		this.virtInfo = virtInfo;
+	}
+	
+	//Return the Column Name
+	public void setPrimary() {
+		this.isPrimary = true;
 	}
 	
 	//Return the Column Name
@@ -31,7 +40,7 @@ public class ElementCyColumn implements CyColumn {
 	}
 
 	//Set the Column Name
-	public void setName(String newName) {
+	synchronized public void setName(String newName) {
 		if (this.isImmutable())
 			throw new IllegalArgumentException("Attempt to rename Immutable Column");
 		if (newName == null)
@@ -61,8 +70,7 @@ public class ElementCyColumn implements CyColumn {
 
 	@Override
 	public boolean isPrimaryKey() {
-		// TODO Auto-generated method stub
-		return false;
+		return isPrimary;
 	}
 
 	//Return if the Table is Immutable
@@ -77,6 +85,9 @@ public class ElementCyColumn implements CyColumn {
 
 	@Override
 	public <T> List<T> getValues(Class<? extends T> type) {
+		if (virtInfo.isVirtual()) {
+			return (table.getColumn(virtInfo.getSourceColumn())).getValues(type);
+		}
 		if (type == null) 
 			throw new NullPointerException();
 		ArrayList<T> result = new ArrayList<T>();
@@ -88,8 +99,7 @@ public class ElementCyColumn implements CyColumn {
 
 	@Override
 	public VirtualColumnInfo getVirtualColumnInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.virtInfo;
 	}
 
 }

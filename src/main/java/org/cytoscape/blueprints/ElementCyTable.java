@@ -28,15 +28,20 @@ public class ElementCyTable implements CyTable {
 	
 	private final Map<Long, CyRow> rows;
     private final Map<String, CyColumn> cols;
+    
+    private final Map<String, VirtualColumn> virtCols;
 	
-	ElementCyTable(long id, String title, final CyEventHelper eventHelper) {
+	ElementCyTable(long id, final String title, final CyEventHelper eventHelper, final boolean isImmutable) {
 		this.suid = id;
 		rows = new HashMap<Long, CyRow>();
 		cols = new HashMap<String, CyColumn>();
+		
+		virtCols = new HashMap<String, VirtualColumn>();
 		setTitle(title);
 		
 		//Create Primary Key Column
 		createColumn("Primary", Long.class, true);
+		((ElementCyColumn)getColumn("Primary")).setPrimary();
 		
 		this.isImmutable = false;
 		
@@ -83,8 +88,8 @@ public class ElementCyTable implements CyTable {
 	}
 
 	@Override
-	public CyColumn getColumn(String columnName) {
-		return cols.get(columnName);
+	synchronized public CyColumn getColumn(String columnName) {
+			return cols.get(columnName);
 	}
 
 	// Return All Columns
@@ -94,6 +99,8 @@ public class ElementCyTable implements CyTable {
 
 	@Override
 	public void deleteColumn(String columnName) {
+		if (getColumn(columnName) != null && getColumn(columnName).isImmutable())
+			throw new IllegalArgumentException("Cannot delete Immutable Column: " + columnName);
 		cols.remove(columnName);
 		if (eventHelper != null)
 			eventHelper.fireEvent(new ColumnDeletedEvent(this, columnName));
@@ -117,7 +124,7 @@ public class ElementCyTable implements CyTable {
 				type == Double.class || 
 				type == String.class) {
 			
-			cols.put(columnName, new ElementCyColumn(this, columnName, isImmutable, type, false));
+			cols.put(columnName, new ElementCyColumn(this, columnName, isImmutable, type, false, new ElementVirtualColumnInfo()));
 			if (eventHelper != null)
 				eventHelper.fireEvent(new ColumnCreatedEvent(this, columnName));
 		} else {
@@ -140,7 +147,7 @@ public class ElementCyTable implements CyTable {
 			listElementType == Long.class || 
 			listElementType == Double.class || 
 			listElementType == String.class) {
-				cols.put(columnName, new ElementCyColumn(this, columnName, isImmutable, listElementType, true));
+				cols.put(columnName, new ElementCyColumn(this, columnName, isImmutable, listElementType, true, new ElementVirtualColumnInfo()));
 				if (eventHelper != null)
 					eventHelper.fireEvent(new ColumnCreatedEvent(this, columnName));
 		} else {
@@ -200,14 +207,31 @@ public class ElementCyTable implements CyTable {
 	public String addVirtualColumn(String virtualColumn, String sourceColumn,
 			CyTable sourceTable, String sourceJoinKey, String targetJoinKey,
 			boolean isImmutable) {
+		String virtColName = getValidColumnName(virtualColumn);
+		ElementVirtualColumnInfo virtInfo = new ElementVirtualColumnInfo(sourceColumn, sourceJoinKey, targetJoinKey, sourceTable, isImmutable);
+		if (sourceTable.getColumn(sourceColumn).getType() == List.class) {
+			cols.put(virtColName, new ElementCyColumn(this, virtColName, isImmutable, sourceTable.getColumn(sourceColumn).getListElementType(), true, virtInfo));
+		} else {
+			cols.put(virtColName, new ElementCyColumn(this, virtColName, isImmutable, sourceTable.getColumn(sourceColumn).getType(), false, virtInfo));
+		}
+		//virtCols.put(virtColName, new VirtualColumn(sourceTable, sourceColumn, this, sourceJoinKey, targetJoinKey));
 		++((ElementCyTable)sourceTable).virtualColumnReferences;
-		return null;
+		return virtColName;
 	}
 
+	private String getValidColumnName(String name) {
+		int i = 0;
+		String newName = name;
+		while (cols.containsKey(newName)) {
+			i++;
+			newName = name + "-" + i;
+		}
+		return newName;
+	}
+	
 	@Override
 	public void addVirtualColumns(CyTable sourceTable, String sourceJoinKey,
 			String targetJoinKey, boolean isImmutable) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -227,19 +251,19 @@ public class ElementCyTable implements CyTable {
 		return (rows.put(row.getID(), row) != null);
 	}
 	
-	public void renameColumn(String oldName, String newName) {
+	synchronized public void renameColumn(String oldName, String newName) {
+		
+		cols.put(newName, cols.get(oldName));
+		
 		for (CyRow row : this.getAllRows()) {
-			if (this.getColumn(oldName) != null) {
 				if (this.getColumn(oldName).getType() == List.class) {
 					row.set(newName, row.getList(oldName,this.getColumn(oldName).getListElementType()));
 				} else {
 					row.set(newName, row.get(oldName,this.getColumn(oldName).getType()));
 				}
 				row.set(oldName, null);
-				System.out.println(oldName + " " + newName);
-			}
 		}
-		cols.put(newName, cols.remove(oldName));
+		cols.remove(oldName);
 	}
 
 
@@ -252,6 +276,10 @@ public class ElementCyTable implements CyTable {
 		title = other.getTitle();
 		other.setTitle(tempTitle);
 		
+	}
+	
+	public void setRowEvent(Object key) {
+		eventHelper.addEventPayload((CyTable)this, key, RowsCreatedEvent.class);
 	}
 
 }
