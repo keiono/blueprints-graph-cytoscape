@@ -2,10 +2,13 @@ package org.cytoscape.blueprints;
 
 import static org.junit.Assert.*;
 
+import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.AbstractCyNodeTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.tinkerpop.blueprints.pgm.Graph;
 import com.tinkerpop.blueprints.pgm.impls.tg.TinkerGraphFactory;
@@ -13,12 +16,17 @@ import com.tinkerpop.blueprints.pgm.impls.tg.TinkerGraphFactory;
 public class VertexCytoscapeTest extends AbstractCyNodeTest {
 	
 	private VertexCytoscape node;
+	
+	@Mock
+	private CyEventHelper eventHelper;
 
-	@Before
+	@Override
 	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
+		
 		final Graph graph = TinkerGraphFactory.createTinkerGraph();
 		graph.clear();
-		net =  new GraphCytoscape(graph);
+		net =  new GraphCytoscape(graph, eventHelper);
 		node = new VertexCytoscape(graph.addVertex("1"), 1, net.getDefaultNodeTable());
 	}
 

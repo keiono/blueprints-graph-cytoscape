@@ -14,6 +14,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cytoscape</groupId>
 	<artifactId>blueprints-graph-cytoscape</artifactId>
+	<version>0.1.0</version>
 
 	<name>${bundle.symbolicName}</name>
 
@@ -62,7 +63,7 @@
 		</plugins>
 	</build>
 
-<repositories>
+	<repositories>
 		<!-- bootstrap for cytoscape dependencies, namely the parent POM snapshots -->
 		<repository>
 			<id>cytoscape_snapshots</id>
@@ -88,7 +89,7 @@
 			<url>http://cytoscape.wodaklab.org/nexus/content/repositories/releases/</url>
 		</repository>
 	</repositories>
-	
+
 	<!-- Dependencies included here should *ONLY* be for the impl bundle. All 
 		additional dependencies necessary for the integration tests (it) should be 
 		kept in the it/pom.xml -->
@@ -100,10 +101,18 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.cytoscape.wrappers</groupId>
-			<artifactId>com.tinkerpop.blueprints.core</artifactId>
-			<version>0.7-SNAPSHOT</version>
+			<groupId>org.cytoscape</groupId>
+			<artifactId>event-api</artifactId>
+			<version>3.0.0-alpha6-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.cytoscape.wrappers</groupId>
+			<artifactId>tinkerpop-blueprints-core</artifactId>
+			<version>0.9</version>
+		</dependency>
+
+		<!-- For Testing -->
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>model-api</artifactId>
@@ -112,24 +121,26 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.cytoscape</groupId>
+			<artifactId>event-api</artifactId>
+			<version>3.0.0-alpha6-SNAPSHOT</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
+			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.8.1</version>
+			<version>1.8.5</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-            <groupId>org.cytoscape</groupId>
-            <artifactId>event-api</artifactId>
-            <version>3.0.0-alpha6-SNAPSHOT</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
+
 	</dependencies>
 </project>
 

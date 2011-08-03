@@ -7,18 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.cytoscape.event.CyEventHelper;
-import org.cytoscape.event.DummyCyEventHelper;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyEdge.Type;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
-import org.cytoscape.model.CyTableEntry;
 import org.cytoscape.model.SUIDFactory;
 
 import com.tinkerpop.blueprints.pgm.Edge;
-import com.tinkerpop.blueprints.pgm.Element;
 import com.tinkerpop.blueprints.pgm.Graph;
 import com.tinkerpop.blueprints.pgm.Vertex;
 import com.tinkerpop.blueprints.pgm.oupls.GraphSource;
@@ -45,7 +42,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     private final Map<String, CyTable> edgeTableManager;
 
     //Constructor
-    public GraphCytoscape(final Graph graph) {
+    public GraphCytoscape(final Graph graph, final CyEventHelper eventHelper) {
 		this.graph = graph;
 		initGraph();
 	
@@ -65,7 +62,8 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	
 		initDefaultTables();
 		
-		this.eventHelper = new DummyCyEventHelper();
+		// Will be provided through Spring DM
+		this.eventHelper = eventHelper;
     }
 
     private void initDefaultTables() {
