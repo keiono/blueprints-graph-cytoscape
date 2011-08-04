@@ -9,17 +9,34 @@
 	<properties>
 		<bundle.symbolicName>org.cytoscape.blueprints</bundle.symbolicName>
 		<bundle.namespace>org.cytoscape.blueprints</bundle.namespace>
+		<bundle.version>0.1.0</bundle.version>
 	</properties>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cytoscape</groupId>
 	<artifactId>blueprints-graph-cytoscape</artifactId>
-	<version>0.1.0</version>
-
-	<name>${bundle.symbolicName}</name>
-
+	<version>${bundle.version}</version>
+	<url>http://www.cytoscape.org/</url>
+	<name>${bundle.symbolicName} ${bundle.version}</name>
 	<packaging>bundle</packaging>
+	
+	<description>"Ouplementation" of Cytoscape graph model (CyNetwork) for Tinkerpop Blueprints framework</description>
 
+	<contributors>
+		<contributor>
+			<name>Michael Kirby</name>
+			<url>https://github.com/mckgamer</url>
+		</contributor>
+		<contributor>
+			<name>Mike Smoot</name>
+			<url>http://www.cytoscape.org/</url>
+		</contributor>
+		<contributor>
+			<name>Keiichiro Ono</name>
+			<url>http://www.keiono.net/</url>
+		</contributor>
+	</contributors>
+	
 	<build>
 		<plugins>
 			<plugin>
