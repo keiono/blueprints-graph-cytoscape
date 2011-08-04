@@ -20,7 +20,7 @@ public class VertexCytoscapeTest extends AbstractCyNodeTest {
 	@Mock
 	private CyEventHelper eventHelper;
 
-	@Override
+	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		

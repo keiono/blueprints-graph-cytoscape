@@ -2,6 +2,7 @@ package org.cytoscape.blueprints;
 
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.AbstractCyEdgeTest;
+import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -12,7 +13,7 @@ public class EdgeCytoscapeTest extends AbstractCyEdgeTest {
 
 	@Mock CyEventHelper eventHelper;
 	
-	@Override
+	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 

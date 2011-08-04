@@ -26,7 +26,7 @@ public class GraphCytoscapeTest extends AbstractCyNetworkTest{
 	@Mock
 	CyEventHelper eventHelper;
 
-	@Override
+	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		final Graph graph = TinkerGraphFactory.createTinkerGraph();
