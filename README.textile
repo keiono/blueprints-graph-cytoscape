@@ -1,8 +1,7 @@
-Cytoscape ouplementation of Blueprints graph.  This is an OSGi bundle.
+h2. Cytoscape Ouplementation of Blueprints Graph API
 
-<Updated on June 29 2011>
-Now this is a summer project for mckgamer.
-The goal of this project is make Blueprints-compatible graph database accessible from Cytoscape 3.
+The goal of this project is implementing CyNetwork API with Blueprints framework 
+and make disk-based graph implementations, such as Neo4j, accessible from Cytoscape.
 
+This is a summer student project by mckgamer.
 
-Test Supplement
