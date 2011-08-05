@@ -26,8 +26,8 @@ public class ElementCyTable implements CyTable {
 	
 	final private CyEventHelper eventHelper;
 	
-	private final Map<Long, CyRow> rows;
-    private final Map<String, CyColumn> cols;
+	private Map<Long, CyRow> rows;
+    private Map<String, CyColumn> cols;
     
 	
 	ElementCyTable(long id, final String title, final CyEventHelper eventHelper, final boolean isImmutable) {
@@ -266,12 +266,32 @@ public class ElementCyTable implements CyTable {
 
 	@Override
 	public void swap(CyTable otherTable) {
-		
+	    
 		final ElementCyTable other = (ElementCyTable)otherTable;
 		
+		final long tempSuid = suid;
+		suid = other.suid;
+		other.suid = tempSuid;
+		
 		final String tempTitle = title;
-		title = other.getTitle();
-		other.setTitle(tempTitle);
+		title = other.title;
+		other.title = tempTitle;
+		
+		final boolean tempIsImmutable = isImmutable;
+		isImmutable = other.isImmutable;
+		other.isImmutable = tempIsImmutable;
+		
+		final int tempVirtualColumnReferences = virtualColumnReferences;
+		virtualColumnReferences = other.virtualColumnReferences;
+		other.virtualColumnReferences = tempVirtualColumnReferences;
+		
+		final Map<Long, CyRow> tempRows = rows;
+		rows = other.rows;
+		other.rows = tempRows;
+		
+		final Map<String, CyColumn> tempCols = cols;
+		cols = other.cols;
+		other.cols = tempCols;
 		
 	}
 	
