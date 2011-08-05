@@ -29,34 +29,37 @@ public class GraphCytoscapeTest extends AbstractCyNetworkTest{
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
+		
 		final Graph graph = TinkerGraphFactory.createTinkerGraph();
 		graph.clear();
-		net =  new GraphCytoscape(graph, eventHelper);
-	}
-
-	
-	public void tearDown() throws Exception {
+		net = new GraphCytoscape(graph, eventHelper);
 	}
 	
 
+	@Test
 	public void testGraphCytoscape() throws Exception {
 		assertNotNull(net);
 	}
 	
+	
+	@Test
 	public void testAddNodeThing() throws Exception {	
 		
 		CyNode n1 = net.addNode();
 		CyNode n2 = net.addNode();
 		CyNode n3 = net.addNode();
+		
+		assertEquals(3, net.getNodeCount());
 
 		// add a directed edge
 		net.addEdge(n1, n1, false);
+		
+		assertEquals(1, net.getEdgeCount());
+		
 		//System.out.println(net.getNeighborList(n1, CyEdge.Type.ANY).size());
 		for (CyNode c:net.getNeighborList(n1, CyEdge.Type.ANY)) {
 			//System.out.println(c.getIndex());
 		}
-
-
 	}
 
 }

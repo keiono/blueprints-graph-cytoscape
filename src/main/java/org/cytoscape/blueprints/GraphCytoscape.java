@@ -23,6 +23,7 @@ import com.tinkerpop.blueprints.pgm.oupls.GraphSource;
 public class GraphCytoscape implements GraphSource, CyNetwork {
 
     private final Graph graph;
+    
     private final long suid;
     
     private int nodeID;
@@ -111,14 +112,19 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     	return this.suid;
     }
 
-    //Adds a Node
-    public CyNode addNode() {
-    	final Vertex vertex = graph.addVertex(SUIDFactory.getNextSUID());
-		VertexCytoscape vc = new VertexCytoscape(vertex, nodeID, getDefaultNodeTable());
-		nodeMap.put(vertex,vc);
-		nodeIndexMap.put(nodeID++,vc);
+	// Adds a Node
+	public CyNode addNode() {
+		// TODO: This does not work for Neo4j implementation since ID will be set by Neo4j even if we provide one here!
+		final Long generatedID = SUIDFactory.getNextSUID();
+		final Vertex vertex = graph.addVertex(generatedID);
+		final Object vid = vertex.getId(); // Create map for this to actual node
+		// use the map here.
+		
+		final VertexCytoscape vc = new VertexCytoscape(vertex, nodeID, getDefaultNodeTable());
+		nodeMap.put(vertex, vc);
+		nodeIndexMap.put(nodeID++, vc);
 		return vc;
-    }
+	}
 
     //Removes Nodes  !!DELETES EDGES FROM EDGEMAP EFFECTED!! -- not necessarily tested in tests
     public boolean removeNodes(Collection<CyNode> nodes) {
@@ -190,10 +196,14 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		return new ArrayList<CyEdge>(edgeMap.values());
     }
     
-    //Checks if the Specified Node Exists
-    public boolean containsNode(CyNode node) {
-    	return (graph.getVertex(node.getSUID()) != null);
-    }
+	// Checks if the Specified Node Exists
+	@Override
+	public boolean containsNode(final CyNode node) {
+		if(node == null)
+			return false;
+		
+		return (graph.getVertex(node.getSUID()) != null);
+	}
 
     //Checks if the Specified Edge Exists
     public boolean containsEdge(CyEdge edge) {
