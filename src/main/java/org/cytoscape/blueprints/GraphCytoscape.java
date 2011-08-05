@@ -20,37 +20,55 @@ import com.tinkerpop.blueprints.pgm.Graph;
 import com.tinkerpop.blueprints.pgm.Vertex;
 import com.tinkerpop.blueprints.pgm.oupls.GraphSource;
 
+
+/**
+ * "Ouplementation" of CyNetwork
+ *
+ */
 public class GraphCytoscape implements GraphSource, CyNetwork {
 
-    private final Graph graph;
-    
-    private final long suid;
-    
-    private int nodeID;
-    private int edgeID;
-    
-    private final CyEventHelper eventHelper;
-    
-    //Node and Edge Maps
-    private Map<Integer, CyNode> nodeIndexMap;
-    private Map<Integer, CyEdge> edgeIndexMap;
-    private Map<Vertex, CyNode> nodeMap;
-    private Map<Edge, CyEdge> edgeMap;
-
-    //Table Maps
-    private final Map<String, CyTable> netTableManager;
-    private final Map<String, CyTable> nodeTableManager;
-    private final Map<String, CyTable> edgeTableManager;
-
-    //Constructor
-    public GraphCytoscape(final Graph graph, final CyEventHelper eventHelper) {
-		this.graph = graph;
-		initGraph();
+	private final CyEventHelper eventHelper;
 	
+	// Wrapped Bleuprints-compatible graph
+	private final Graph graph;
+
+	// Session-unique ID for this CyNetwork
+	private final long suid;
+	
+	private int nodeIndex;
+	private int edgeIndex;
+
+	// Node and Edge Maps
+	private Map<Integer, CyNode> nodeIndexMap;
+	private Map<Integer, CyEdge> edgeIndexMap;
+	private Map<Vertex, CyNode> nodeMap;
+	private Map<Edge, CyEdge> edgeMap;
+
+	// Table Maps
+	private final Map<String, CyTable> netTableManager;
+	private final Map<String, CyTable> nodeTableManager;
+	private final Map<String, CyTable> edgeTableManager;
+
+
+	/**
+	 * Wrap the given graph with CyNetwork and GraphSource interface.
+	 *  
+	 * @param graph actual implementation of the Blueprints-compatible graph
+	 * @param eventHelper
+	 */
+	public GraphCytoscape(final Graph graph, final CyEventHelper eventHelper) {
+		if(graph == null)
+			throw new NullPointerException("Graph parameter cannot be null.");
+		if(eventHelper == null)
+			throw new NullPointerException("CyEventHelper is null.");
+		
+		this.graph = graph;
+		this.eventHelper = eventHelper;
+
 		this.suid = SUIDFactory.getNextSUID();
 		
-		this.nodeID = 0;
-		this.edgeID = 0;
+		this.nodeIndex = 0;
+		this.edgeIndex = 0;
 		
 		this.nodeIndexMap = new HashMap<Integer, CyNode>();
 		this.edgeIndexMap = new HashMap<Integer, CyEdge>();
@@ -62,10 +80,8 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		edgeTableManager = new HashMap<String, CyTable>();
 	
 		initDefaultTables();
-		
-		// Will be provided through Spring DM
-		this.eventHelper = eventHelper;
-    }
+
+	}
 
     private void initDefaultTables() {
     	//Set Default Network Table and Columns
@@ -87,10 +103,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     	edgeTable.createColumn("interaction", String.class, false);
     	edgeTableManager.put(edgeTable.getTitle(), edgeTable);
     }
-    
-    private void initGraph() {
-    
-    }
+
 
     //Return the Graph Object
     public Graph getGraph() {
@@ -120,9 +133,9 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		final Object vid = vertex.getId(); // Create map for this to actual node
 		// use the map here.
 		
-		final VertexCytoscape vc = new VertexCytoscape(vertex, nodeID, getDefaultNodeTable(), eventHelper);
+		final VertexCytoscape vc = new VertexCytoscape(vertex, nodeIndex, getDefaultNodeTable(), eventHelper);
 		nodeMap.put(vertex, vc);
-		nodeIndexMap.put(nodeID++, vc);
+		nodeIndexMap.put(nodeIndex++, vc);
 		return vc;
 	}
 
@@ -152,9 +165,9 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     		Vertex s = graph.getVertex(source.getSUID());
     		Vertex t = graph.getVertex(target.getSUID());
     		final Edge edge = graph.addEdge(SUIDFactory.getNextSUID(),s, t, "");
-    		EdgeCytoscape ec = new EdgeCytoscape(edge, edgeID, isDirected, source, target, getDefaultEdgeTable(), eventHelper);
+    		EdgeCytoscape ec = new EdgeCytoscape(edge, edgeIndex, isDirected, source, target, getDefaultEdgeTable(), eventHelper);
     		edgeMap.put(edge,ec);
-    		edgeIndexMap.put(edgeID++,ec);
+    		edgeIndexMap.put(edgeIndex++,ec);
     		return ec;
     	}
 		throw new RuntimeException();
