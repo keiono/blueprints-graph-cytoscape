@@ -29,14 +29,12 @@ public class ElementCyTable implements CyTable {
 	private final Map<Long, CyRow> rows;
     private final Map<String, CyColumn> cols;
     
-    private final Map<String, VirtualColumn> virtCols;
 	
 	ElementCyTable(long id, final String title, final CyEventHelper eventHelper, final boolean isImmutable) {
 		this.suid = id;
 		rows = new HashMap<Long, CyRow>();
 		cols = new HashMap<String, CyColumn>();
 		
-		virtCols = new HashMap<String, VirtualColumn>();
 		setTitle(title);
 		
 		//Create Primary Key Column
@@ -162,7 +160,7 @@ public class ElementCyTable implements CyTable {
 			throw new NullPointerException("Null Primary Key");
 		}
 		if (rows.get(primaryKey) == null) {
-			ElementCyRow newRow = new ElementCyRow(this, new DummyElement(primaryKey));
+			ElementCyRow newRow = new ElementCyRow(this, new DummyElement(primaryKey), eventHelper);
 			addRow(newRow);
 			eventHelper.addEventPayload((CyTable)this, (Object)primaryKey, RowsCreatedEvent.class);
 			return newRow;
@@ -214,7 +212,6 @@ public class ElementCyTable implements CyTable {
 		} else {
 			cols.put(virtColName, new ElementCyColumn(this, virtColName, isImmutable, sourceTable.getColumn(sourceColumn).getType(), false, virtInfo));
 		}
-		//virtCols.put(virtColName, new VirtualColumn(sourceTable, sourceColumn, this, sourceJoinKey, targetJoinKey));
 		++((ElementCyTable)sourceTable).virtualColumnReferences;
 		return virtColName;
 	}

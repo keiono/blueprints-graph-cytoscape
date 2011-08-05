@@ -86,7 +86,7 @@ public class ElementCyColumn implements CyColumn {
 	@Override
 	public <T> List<T> getValues(Class<? extends T> type) {
 		if (virtInfo.isVirtual()) {
-			return (table.getColumn(virtInfo.getSourceColumn())).getValues(type);
+			return (virtInfo.getSourceTable().getColumn(virtInfo.getSourceColumn())).getValues(type);
 		}
 		if (type == null) 
 			throw new NullPointerException();

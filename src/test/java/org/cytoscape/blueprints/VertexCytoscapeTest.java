@@ -27,7 +27,7 @@ public class VertexCytoscapeTest extends AbstractCyNodeTest {
 		final Graph graph = TinkerGraphFactory.createTinkerGraph();
 		graph.clear();
 		net =  new GraphCytoscape(graph, eventHelper);
-		node = new VertexCytoscape(graph.addVertex("1"), 1, net.getDefaultNodeTable());
+		node = new VertexCytoscape(graph.addVertex("1"), 1, net.getDefaultNodeTable(), eventHelper);
 	}
 
 	@After

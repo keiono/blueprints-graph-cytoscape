@@ -1,5 +1,6 @@
 package org.cytoscape.blueprints;
 
+import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
@@ -22,11 +23,14 @@ public class VertexCytoscape implements CyNode {
 	
 	private ElementCyRow row;
 	
-	VertexCytoscape(final Vertex vertex, final int index, CyTable table) {
+	private CyEventHelper eventHelper;
+	
+	VertexCytoscape(final Vertex vertex, final int index, CyTable table, final CyEventHelper eventHelper) {
 		this.vertex = vertex;
 		this.index = index;
+		this.eventHelper = eventHelper;
 		
-		row = new ElementCyRow(table, this.vertex);
+		row = new ElementCyRow(table, this.vertex, eventHelper);
 	}
 
 	public CyRow getCyRow(String tableName) {

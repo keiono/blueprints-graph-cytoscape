@@ -70,7 +70,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     private void initDefaultTables() {
     	//Set Default Network Table and Columns
     	ElementCyTable netTable = new ElementCyTable(SUIDFactory.getNextSUID(), CyNetwork.DEFAULT_ATTRS, eventHelper, false);
-    	netTable.addRow(new ElementCyRow(netTable, new DummyElement(this.getSUID())));
+    	netTable.addRow(new ElementCyRow(netTable, new DummyElement(this.getSUID()), eventHelper));
     	netTable.createColumn("name", String.class, true);
     	netTableManager.put(netTable.getTitle(), netTable);
     	
@@ -120,7 +120,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		final Object vid = vertex.getId(); // Create map for this to actual node
 		// use the map here.
 		
-		final VertexCytoscape vc = new VertexCytoscape(vertex, nodeID, getDefaultNodeTable());
+		final VertexCytoscape vc = new VertexCytoscape(vertex, nodeID, getDefaultNodeTable(), eventHelper);
 		nodeMap.put(vertex, vc);
 		nodeIndexMap.put(nodeID++, vc);
 		return vc;
@@ -152,7 +152,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     		Vertex s = graph.getVertex(source.getSUID());
     		Vertex t = graph.getVertex(target.getSUID());
     		final Edge edge = graph.addEdge(SUIDFactory.getNextSUID(),s, t, "");
-    		EdgeCytoscape ec = new EdgeCytoscape(edge, edgeID, isDirected, source, target, getDefaultEdgeTable());
+    		EdgeCytoscape ec = new EdgeCytoscape(edge, edgeID, isDirected, source, target, getDefaultEdgeTable(), eventHelper);
     		edgeMap.put(edge,ec);
     		edgeIndexMap.put(edgeID++,ec);
     		return ec;

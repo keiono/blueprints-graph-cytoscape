@@ -1,5 +1,6 @@
 package org.cytoscape.blueprints;
 
+import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNode;
@@ -23,14 +24,18 @@ public class EdgeCytoscape implements CyEdge {
 	
 	private ElementCyRow row;
 	
-	EdgeCytoscape(final Edge edge, final int index, final boolean isDirected, final CyNode s, final CyNode t, CyTable table) {
+	private CyEventHelper eventHelper;
+	
+	EdgeCytoscape(final Edge edge, final int index, final boolean isDirected, final CyNode s, final CyNode t, CyTable table, final CyEventHelper eventHelper) {
 		this.edge = edge;
 		this.index = index;
 		this.isDirected= isDirected;
 		this.sourceNode = s;
 		this.targetNode = t;
 		
-		row = new ElementCyRow(table, this.edge);/*
+		this.eventHelper = eventHelper;
+		
+		row = new ElementCyRow(table, this.edge, eventHelper);/*
 		row.set("name", "");
 		row.set("selected", false);
 		row.set("interaction", "");*/
