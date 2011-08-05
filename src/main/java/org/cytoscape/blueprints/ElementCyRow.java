@@ -80,12 +80,15 @@ public class ElementCyRow implements CyRow {
 		} else {
 			throw new IllegalArgumentException("No Such Column");
 		}
-		if (value == null) 
+		if (value == null) {
 			ele.removeProperty(columnName);
-		else if (!table.getColumn(columnName).getType().isAssignableFrom(value.getClass()))
+			eventHelper.addEventPayload(null, null, null);
+		} else if (!table.getColumn(columnName).getType().isAssignableFrom(value.getClass()))
 			throw new IllegalArgumentException("Values of wrong type" + table.getColumn(columnName).getType() + " vs " + value.getClass() );
-		else
+		else {
 			ele.setProperty(columnName, value);
+			eventHelper.addEventPayload(null, null, null);
+		}
 	}
 
 	@Override
