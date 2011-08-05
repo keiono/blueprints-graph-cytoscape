@@ -2,6 +2,8 @@ package org.cytoscape.blueprints.implementations;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+
 import org.cytoscape.blueprints.GraphCytoscape;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.AbstractCyNetworkTest;
@@ -23,7 +25,7 @@ import com.tinkerpop.blueprints.pgm.impls.neo4j.Neo4jGraph;
  */
 public class Neo4jTest extends AbstractCyNetworkTest {
 
-	private static final String TEMP_DB = "target/neo4jDB";
+	private static final String TEMP_DB = "target" + File.separator + "neo4jDB";
 	
 	@Mock
 	private CyEventHelper eventHelper;
