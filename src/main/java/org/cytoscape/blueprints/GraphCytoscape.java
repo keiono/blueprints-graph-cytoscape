@@ -1,5 +1,7 @@
 package org.cytoscape.blueprints;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,6 +30,15 @@ import com.tinkerpop.blueprints.pgm.oupls.GraphSource;
  */
 public class GraphCytoscape implements GraphSource, CyNetwork {
 
+	private static URI DEF_URI;
+	static {
+		try {
+			DEF_URI = new URI("http://www.cytoscape.org/");
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private final CyEventHelper eventHelper;
 	
 	// Wrapped Bleuprints-compatible graph
@@ -161,6 +172,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 			vertex = graph.addVertex(generatedID);
 		} catch (Exception ex) {
 			// TODO: How can we handle URI ID?
+			vertex = graph.addVertex(DEF_URI);
 		}
 
 		final Object vID = vertex.getId();
