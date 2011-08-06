@@ -18,6 +18,7 @@ import org.cytoscape.model.SUIDFactory;
 import com.tinkerpop.blueprints.pgm.Edge;
 import com.tinkerpop.blueprints.pgm.Graph;
 import com.tinkerpop.blueprints.pgm.Vertex;
+import com.tinkerpop.blueprints.pgm.Element;
 import com.tinkerpop.blueprints.pgm.oupls.GraphSource;
 
 
@@ -37,6 +38,9 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	
 	private int nodeIndex;
 	private int edgeIndex;
+	
+	private int nodeCount;
+	private int edgeCount;
 
 	// Node and Edge Maps
 	private Map<Integer, CyNode> nodeIndexMap;
@@ -48,6 +52,9 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	private final Map<String, CyTable> netTableManager;
 	private final Map<String, CyTable> nodeTableManager;
 	private final Map<String, CyTable> edgeTableManager;
+	
+	private final Map<Long, Object> nodeSUID2VertexIdMap;
+	private final Map<Long, Object> edgeSUID2EdgeIdMap;
 
 
 	/**
@@ -67,6 +74,8 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 
 		this.suid = SUIDFactory.getNextSUID();
 		
+		initGraph();
+		
 		this.nodeIndex = 0;
 		this.edgeIndex = 0;
 		
@@ -78,9 +87,30 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		netTableManager = new HashMap<String, CyTable>();
 		nodeTableManager = new HashMap<String, CyTable>();
 		edgeTableManager = new HashMap<String, CyTable>();
+		
+		nodeSUID2VertexIdMap = new HashMap<Long, Object>();
+		edgeSUID2EdgeIdMap = new HashMap<Long, Object>();
 	
 		initDefaultTables();
 
+	}
+	
+	private void initGraph() {
+		// Count number of nodes and edges
+		countGraphObject(this.nodeCount, graph.getVertices());
+		countGraphObject(this.edgeCount, graph.getEdges());
+		
+	}
+	
+	@SuppressWarnings("rawtypes")
+	private void countGraphObject(int count, Iterable<? extends Element> itr) {
+		if (itr instanceof Collection)
+			count = ((Collection) itr).size();
+		else {
+			count = 0;
+			for (Element elm : itr)
+				count++;
+		}
 	}
 
     private void initDefaultTables() {
@@ -127,15 +157,24 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 
 	// Adds a Node
 	public CyNode addNode() {
-		// TODO: This does not work for Neo4j implementation since ID will be set by Neo4j even if we provide one here!
+		// Cytoscape's SUID. This is required
 		final Long generatedID = SUIDFactory.getNextSUID();
-		final Vertex vertex = graph.addVertex(generatedID);
-		final Object vid = vertex.getId(); // Create map for this to actual node
-		// use the map here.
-		
-		final VertexCytoscape vc = new VertexCytoscape(vertex, nodeIndex, getDefaultNodeTable(), eventHelper);
+
+		Vertex vertex = null;
+		try {
+			vertex = graph.addVertex(generatedID);
+		} catch (Exception ex) {
+			// TODO: How can we handle URI ID?
+		}
+
+		final Object vID = vertex.getId();
+		nodeSUID2VertexIdMap.put(generatedID, vID);
+
+		// Wrap it as CyNode
+		final CyNode vc = new VertexCytoscape(vertex, nodeIndex, getDefaultNodeTable(), eventHelper);
 		nodeMap.put(vertex, vc);
 		nodeIndexMap.put(nodeIndex++, vc);
+		nodeCount++;
 		return vc;
 	}
 
@@ -148,6 +187,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	    			Edge er = graph.getEdge(e.getSUID());
 	    			edgeIndexMap.remove(e.getIndex());
 			    	edgeMap.remove(er);
+			    	nodeCount--;
 	    		}
 		    	graph.removeVertex(vr);
 		    	nodeIndexMap.remove(node.getIndex());
@@ -191,7 +231,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     
     //Returns Current Node Count
     public int getNodeCount() {
-    	return nodeIndexMap.size();
+    	return nodeCount;
     }
 
     //Returns Current Edge Count
@@ -209,13 +249,16 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		return new ArrayList<CyEdge>(edgeMap.values());
     }
     
-	// Checks if the Specified Node Exists
-	@Override
+    @Override
 	public boolean containsNode(final CyNode node) {
 		if(node == null)
 			return false;
 		
-		return (graph.getVertex(node.getSUID()) != null);
+		final Object vertexID = nodeSUID2VertexIdMap.get(node.getSUID());
+		if(graph.getVertex(vertexID) == null)
+			return false;
+		else
+			return true;
 	}
 
     //Checks if the Specified Edge Exists
