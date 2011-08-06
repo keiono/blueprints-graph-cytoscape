@@ -29,15 +29,6 @@ import com.tinkerpop.blueprints.pgm.oupls.GraphSource;
  *
  */
 public class GraphCytoscape implements GraphSource, CyNetwork {
-
-	private static URI DEF_URI;
-	static {
-		try {
-			DEF_URI = new URI("http://www.cytoscape.org/");
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	private final CyEventHelper eventHelper;
 	
@@ -172,7 +163,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 			vertex = graph.addVertex(generatedID);
 		} catch (Exception ex) {
 			// TODO: How can we handle URI ID?
-			vertex = graph.addVertex(DEF_URI);
+			vertex = graph.addVertex(null);
 		}
 
 		final Object vID = vertex.getId();

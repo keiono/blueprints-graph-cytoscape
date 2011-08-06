@@ -1,5 +1,6 @@
 package org.cytoscape.blueprints;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.cytoscape.model.CyTable;
 import org.cytoscape.model.VirtualColumnInfo;
 
 import com.tinkerpop.blueprints.pgm.Element;
+import com.tinkerpop.blueprints.pgm.Vertex;
 
 public class ElementCyRow implements CyRow {
 
@@ -25,6 +27,7 @@ public class ElementCyRow implements CyRow {
 		
 		this.eventHelper = eventHelper;
 		
+		// FIXME: this does not work for Sail.  We may need some consition to handle special case?
 		// Automatically add the SUID as the Primary Key
 		ele.setProperty(table.getPrimaryKey().getName(), ele.getId());
 		
