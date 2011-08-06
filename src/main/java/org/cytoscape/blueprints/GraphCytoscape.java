@@ -38,9 +38,6 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	
 	private int nodeIndex;
 	private int edgeIndex;
-	
-	private int nodeCount;
-	private int edgeCount;
 
 	// Node and Edge Maps
 	private Map<Integer, CyNode> nodeIndexMap;
@@ -96,21 +93,20 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	}
 	
 	private void initGraph() {
-		// Count number of nodes and edges
-		countGraphObject(this.nodeCount, graph.getVertices());
-		countGraphObject(this.edgeCount, graph.getEdges());
 		
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private void countGraphObject(int count, Iterable<? extends Element> itr) {
+	private int countGraphObject(Iterable<? extends Element> itr) {
+		int count = 0;
 		if (itr instanceof Collection)
-			count = ((Collection) itr).size();
+			count  = ((Collection) itr).size();
 		else {
-			count = 0;
 			for (Element elm : itr)
 				count++;
 		}
+		
+		return count;
 	}
 
     private void initDefaultTables() {
@@ -174,7 +170,6 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		final CyNode vc = new VertexCytoscape(vertex, nodeIndex, getDefaultNodeTable(), eventHelper);
 		nodeMap.put(vertex, vc);
 		nodeIndexMap.put(nodeIndex++, vc);
-		nodeCount++;
 		return vc;
 	}
 
@@ -187,7 +182,6 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	    			Edge er = graph.getEdge(e.getSUID());
 	    			edgeIndexMap.remove(e.getIndex());
 			    	edgeMap.remove(er);
-			    	nodeCount--;
 	    		}
 		    	graph.removeVertex(vr);
 		    	nodeIndexMap.remove(node.getIndex());
@@ -229,10 +223,12 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     	return true;
     }
     
-    //Returns Current Node Count
-    public int getNodeCount() {
-    	return nodeCount;
-    }
+	// Returns Current Node Count
+	public int getNodeCount() {
+		// TODO: this is necessary to handle updates outside of the CyNetwork API call.
+		// TODO: are there any alternative?
+		return countGraphObject(graph.getVertices());
+	}
 
     //Returns Current Edge Count
     public int getEdgeCount() {

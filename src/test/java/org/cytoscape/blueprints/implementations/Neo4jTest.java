@@ -50,14 +50,20 @@ public class Neo4jTest extends AbstractCyNetworkTest {
 	@Test
 	public void testNeo4j() {
 		assertNotNull(this.net);
-		//net.addNode();
-		// First, manipulate data model through Blueprints API
-//		a = graphImplementation.addVertex(null);
-//		b = graphImplementation.addVertex(null);
-//		a.setProperty("name","node A");
-//		b.setProperty("name","node B");
-//		Edge e = graphImplementation.addEdge(null, a, b, "interacts_with");
-//		e.setProperty("type", "pp");
+		
+	}
+	
+	@Test
+	public void testExistingDB() {
+		//Creates very simple DB before calling CyNetwork methods
+		final Vertex a = graphImplementation.addVertex(null);
+		final Vertex b = graphImplementation.addVertex(null);
+		a.setProperty("name", "node A");
+		b.setProperty("name", "node B");
+		final Edge e = graphImplementation.addEdge(null, a, b, "interacts_with");
+		e.setProperty("type", "pp");
+		
+		assertEquals(2, net.getNodeCount());
 	}
 
 }
