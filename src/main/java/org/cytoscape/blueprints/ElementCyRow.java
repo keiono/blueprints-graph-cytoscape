@@ -27,7 +27,7 @@ public class ElementCyRow implements CyRow {
 		
 		this.eventHelper = eventHelper;
 		
-		// FIXME: this does not work for Sail.  We may need some consition to handle special case?
+		// FIXME: this does not work for Sail.  We may need some condition to handle special case?
 		// Automatically add the SUID as the Primary Key
 		ele.setProperty(table.getPrimaryKey().getName(), ele.getId());
 		
@@ -85,12 +85,12 @@ public class ElementCyRow implements CyRow {
 		}
 		if (value == null) {
 			ele.removeProperty(columnName);
-			eventHelper.addEventPayload(null, null, null);
+			eventHelper.addEventPayload(null, null, (Class)null);
 		} else if (!table.getColumn(columnName).getType().isAssignableFrom(value.getClass()))
 			throw new IllegalArgumentException("Values of wrong type" + table.getColumn(columnName).getType() + " vs " + value.getClass() );
 		else {
 			ele.setProperty(columnName, value);
-			eventHelper.addEventPayload(null, null, null);
+			eventHelper.addEventPayload(null, null, (Class)null);
 		}
 	}
 
