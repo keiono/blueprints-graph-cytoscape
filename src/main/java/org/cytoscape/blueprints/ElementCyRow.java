@@ -1,7 +1,5 @@
 package org.cytoscape.blueprints;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +10,6 @@ import org.cytoscape.model.CyTable;
 import org.cytoscape.model.VirtualColumnInfo;
 
 import com.tinkerpop.blueprints.pgm.Element;
-import com.tinkerpop.blueprints.pgm.Vertex;
 
 public class ElementCyRow implements CyRow {
 
@@ -29,8 +26,12 @@ public class ElementCyRow implements CyRow {
 		
 		// FIXME: this does not work for Sail.  We may need some condition to handle special case?
 		// Automatically add the SUID as the Primary Key
-		ele.setProperty(table.getPrimaryKey().getName(), ele.getId());
-		
+		try {
+			ele.setProperty(table.getPrimaryKey().getName(), ele.getId());
+		} catch(Exception e) {
+			// TODO: What's needed for exception handling?
+			
+		}
 		//if (!table.rowExists(ele.getId())) {
 			//((ElementCyTable)table).addRow(this);
 		//}
