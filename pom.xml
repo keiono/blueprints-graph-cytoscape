@@ -148,6 +148,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.cytoscape</groupId>
+			<artifactId>work-api</artifactId>
+			<version>3.0.0-alpha6-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.cytoscape.wrappers</groupId>
 			<artifactId>tinkerpop-blueprints-core</artifactId>
 			<version>0.9</version>

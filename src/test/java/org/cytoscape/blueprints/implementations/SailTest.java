@@ -4,12 +4,17 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.cytoscape.blueprints.GraphCytoscape;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.AbstractCyNetworkTest;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyRow;
+import org.cytoscape.model.CyTableEntry;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,6 +27,7 @@ import com.tinkerpop.blueprints.pgm.Edge;
 import com.tinkerpop.blueprints.pgm.Graph;
 import com.tinkerpop.blueprints.pgm.Vertex;
 import com.tinkerpop.blueprints.pgm.impls.neo4j.Neo4jGraph;
+import com.tinkerpop.blueprints.pgm.impls.sail.SailGraph;
 import com.tinkerpop.blueprints.pgm.impls.sail.impls.NativeStoreSailGraph;
 
 public class SailTest {
@@ -33,16 +39,30 @@ public class SailTest {
 
 	private CyNetwork net;
 	private static Graph graphImplementation;
-
+	
 	@BeforeClass
 	public static void initialize() throws Exception {
-		graphImplementation = new NativeStoreSailGraph(TEMP_DB);
-		final File brca1RDF = new File("./src/test/resources/P38398.rdf");
-		assertTrue(brca1RDF.exists());
+		final File dbDir = new File(TEMP_DB);
+		
+		if(dbDir.exists() == false) {
+			graphImplementation = new NativeStoreSailGraph(TEMP_DB);
+			final File brca1RDF = new File("./src/test/resources/P38398.rdf");
+			assertTrue(brca1RDF.exists());
 
-		// Create RDF from file
-		((NativeStoreSailGraph) graphImplementation).loadRDF(brca1RDF.toURI().toURL().openStream(),
-				"http://purl.uniprot.org/uniprot/P38398", "rdf-xml", "http://purl.uniprot.org/uniprot/P38398");
+			final File yeastReactome = new File("./src/test/resources/yeast.owl");
+			assertTrue(yeastReactome.exists());
+
+			// Create RDF from file
+			((NativeStoreSailGraph) graphImplementation).loadRDF(brca1RDF.toURI().toURL().openStream(),
+					"http://purl.uniprot.org/uniprot/P38398", "rdf-xml", "http://purl.uniprot.org/uniprot/P38398");
+			System.out.println("RDF loaded: " + brca1RDF.toString());
+
+			((NativeStoreSailGraph) graphImplementation).loadRDF(yeastReactome.toURI().toURL().openStream(),
+					"http://www.reactome.org/biopax/68322", "rdf-xml", "http://www.biopax.org/yeast");
+			System.out.println("RDF loaded: " + yeastReactome.toString());
+		} else {
+			graphImplementation = new NativeStoreSailGraph(TEMP_DB);
+		}
 	}
 
 	@AfterClass
@@ -54,15 +74,10 @@ public class SailTest {
 	public void setup() {
 
 		MockitoAnnotations.initMocks(this);
-
 		net = new GraphCytoscape(graphImplementation, eventHelper);
 	}
 
-	@After
-	public void clear() throws Exception {
-		graphImplementation.clear();
-	}
-
+	
 	@Test
 	public void testNetworkExists() {
 		assertNotNull(net);
@@ -75,11 +90,7 @@ public class SailTest {
 
 	@Test
 	public void testRDF() throws Exception {
-		assertEquals(6264, net.getEdgeCount());
-
-		for (final Edge edge : graphImplementation.getEdges()) {
-			System.out.println("Edge ID = " + edge.getId());
-		}
+		assertEquals(100100, net.getEdgeCount());
 
 		final Vertex v1 = graphImplementation
 				.getVertex("\"Characterization of a carboxy-terminal BRCA1 interacting protein.\"");
@@ -98,7 +109,7 @@ public class SailTest {
 		System.out.println("Prop Key = " + propKey2);
 		assertNotNull(v1.getProperty(propKey2));
 		System.out.println("Prop Val = " + v1.getProperty(propKey2));
-		
+
 		
 
 	}
@@ -106,7 +117,24 @@ public class SailTest {
 	@Test
 	public void testSPARQL() throws Exception {
 		// Send Sparql Query
+		final String query1 = 
+				"SELECT ?reaction ?ecnumber WHERE { ?reaction bp:EC-NUMBER \"3.5.3.1\"^^<http://www.w3.org/2001/XMLSchema#string> }";
 		
+		final List<Map<String, Vertex>> res = ((SailGraph) graphImplementation).executeSparql(query1);
+		
+		assertNotNull(res);
+		
+		for(final Map<String, Vertex> entry:res) {
+			System.out.println(entry.keySet());
+			System.out.println(entry.values());
+		}
+		assertEquals(1, res.size());
+		
+		// Since CyNode cannot take URI as its ID, it should be saved as an table entry.
+		Collection<CyRow> rows = net.getDefaultNodeTable().getMatchingRows(CyTableEntry.NAME, "http://www.reactome.org/biopax/68322#biochemicalReaction537");
+		assertNotNull(rows);
+		assertTrue(rows.size() != 0);
+	
 	}
 
 }
