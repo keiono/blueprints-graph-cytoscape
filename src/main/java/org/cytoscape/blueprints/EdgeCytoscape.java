@@ -22,16 +22,19 @@ public class EdgeCytoscape implements CyEdge {
 	private final CyNode sourceNode;
 	private final CyNode targetNode;
 	
+	private final Long suid;
+	
 	private ElementCyRow row;
 	
 	private CyEventHelper eventHelper;
 	
-	EdgeCytoscape(final Edge edge, final int index, final boolean isDirected, final CyNode s, final CyNode t, CyTable table, final CyEventHelper eventHelper) {
+	EdgeCytoscape(final Long suid, final Edge edge, final int index, final boolean isDirected, final CyNode s, final CyNode t, CyTable table, final CyEventHelper eventHelper) {
 		this.edge = edge;
 		this.index = index;
 		this.isDirected= isDirected;
 		this.sourceNode = s;
 		this.targetNode = t;
+		this.suid = suid;
 		
 		this.eventHelper = eventHelper;
 		
@@ -54,7 +57,8 @@ public class EdgeCytoscape implements CyEdge {
 
 	// Return SUID Of edge
 	public long getSUID() {
-		return Long.parseLong(edge.getId().toString());
+		//return Long.parseLong(edge.getId().toString());
+		return suid;
 	}
 
 	// Return Index of Edge

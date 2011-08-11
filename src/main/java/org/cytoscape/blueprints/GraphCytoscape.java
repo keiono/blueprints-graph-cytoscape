@@ -200,10 +200,25 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     //Adds an Edge
     public CyEdge addEdge(CyNode source, CyNode target, boolean isDirected) {
     	if (containsNode(source) && containsNode(target)) {
+    		
+    		// Cytoscape's SUID. This is required
+    		final Long generatedID = SUIDFactory.getNextSUID();
+    		
     		Vertex s = graph.getVertex(nodeSUID2VertexIdMap.get(source.getSUID()));
     		Vertex t = graph.getVertex(nodeSUID2VertexIdMap.get(target.getSUID()));
-    		final Edge edge = graph.addEdge(SUIDFactory.getNextSUID(),s, t, "");
-    		EdgeCytoscape ec = new EdgeCytoscape(edge, edgeIndex, isDirected, source, target, getDefaultEdgeTable(), eventHelper);
+    		
+    		Edge edge = null;
+    		try {
+    			edge = graph.addEdge(generatedID,s,t,"");
+    		} catch (Exception ex) {
+    			// TODO: How can we handle URI ID?
+    			edge = graph.addEdge(null,s,t,"");
+    		}
+
+    		final Object vID = edge.getId();
+    		edgeSUID2EdgeIdMap.put(generatedID, vID);
+    		
+    		final EdgeCytoscape ec = new EdgeCytoscape(generatedID, edge, edgeIndex, isDirected, source, target, getDefaultEdgeTable(), eventHelper);
     		edgeMap.put(edge,ec);
     		edgeIndexMap.put(edgeIndex++,ec);
     		return ec;
@@ -216,7 +231,8 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	    if (edges == null) { return false; }
     	for(CyEdge edge:edges) {
 	    	if (edge != null && containsEdge(edge)) {
-	    		Edge er = graph.getEdge(edge.getSUID());
+	    		Edge er = graph.getEdge(edgeSUID2EdgeIdMap.get(edge.getSUID()));
+	    		edgeSUID2EdgeIdMap.remove(edge.getSUID());
 		    	graph.removeEdge(er);
 		    	edgeIndexMap.remove(edge.getIndex());
 		    	edgeMap.remove(er);
@@ -236,7 +252,9 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 
     //Returns Current Edge Count
     public int getEdgeCount() {
-    	return edgeIndexMap.size();
+    	// TODO: this is necessary to handle updates outside of the CyNetwork API call.
+		// TODO: are there any alternative?
+    	return countGraphObject(graph.getEdges());
     }
 
     //Return List of Nodes
@@ -263,7 +281,14 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 
     //Checks if the Specified Edge Exists
     public boolean containsEdge(CyEdge edge) {
-    	return (graph.getEdge(edge.getSUID()) != null);
+    	if(edge == null)
+			return false;
+		
+		final Object edgeID = edgeSUID2EdgeIdMap.get(edge.getSUID());
+		if(graph.getEdge(edgeID) == null)
+			return false;
+		else
+			return true;
     }
     
     //Checks if the Nodes Are Connected by an Edge
@@ -510,14 +535,4 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	return this.edgeTableManager.get(CyNetwork.DEFAULT_ATTRS);
     }
     
-    //Provides a Method for Combining Iterables
-    private <T> ArrayList<T> combineIt(Iterable<T>... t){
-    	ArrayList<T> list = new ArrayList<T>();
-    	for (Iterable<T> it : t) {
-    		for (T l: it) {
-    			list.add(l);
-    		}
-    	}
-    	return list;
-    }
 }
