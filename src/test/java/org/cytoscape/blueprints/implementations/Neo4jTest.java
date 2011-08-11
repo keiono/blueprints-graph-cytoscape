@@ -57,7 +57,10 @@ public class Neo4jTest extends AbstractCyNetworkTest {
 	@After
 	public void clearDB() throws Exception {
 		// Remove all nodes and edges.
+		//final CommitManager manager = TransactionalGraphHelper.createCommitManager(
+				//(TransactionalGraph) graphImplementation, 1);
 		((Neo4jGraph) graphImplementation).clear();
+		//manager.close();
 	}
 
 	@Test

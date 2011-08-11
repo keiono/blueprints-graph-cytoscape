@@ -221,6 +221,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     		final EdgeCytoscape ec = new EdgeCytoscape(generatedID, edge, edgeIndex, isDirected, source, target, getDefaultEdgeTable(), eventHelper);
     		edgeMap.put(edge,ec);
     		edgeIndexMap.put(edgeIndex++,ec);
+    		this.edgeSUID2EdgeIdMap.put(ec.getSUID(), edge.getId());
     		return ec;
     	}
 		throw new RuntimeException();
@@ -279,17 +280,20 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 			return true;
 	}
 
-    //Checks if the Specified Edge Exists
-    public boolean containsEdge(CyEdge edge) {
-    	if(edge == null)
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean containsEdge(final CyEdge edge) {
+		if (edge == null)
 			return false;
-		
+
 		final Object edgeID = edgeSUID2EdgeIdMap.get(edge.getSUID());
-		if(graph.getEdge(edgeID) == null)
+		if (graph.getEdge(edgeID) == null)
 			return false;
 		else
 			return true;
-    }
+	}
     
     //Checks if the Nodes Are Connected by an Edge
     public boolean containsEdge(CyNode from, CyNode to) {

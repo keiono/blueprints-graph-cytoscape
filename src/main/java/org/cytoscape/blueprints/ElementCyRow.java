@@ -1,7 +1,5 @@
 package org.cytoscape.blueprints;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +13,6 @@ import org.cytoscape.model.events.RowSetRecord;
 import org.cytoscape.model.events.RowsCreatedEvent;
 
 import com.tinkerpop.blueprints.pgm.Element;
-import com.tinkerpop.blueprints.pgm.Vertex;
 
 public class ElementCyRow implements CyRow {
 
@@ -30,10 +27,14 @@ public class ElementCyRow implements CyRow {
 		
 		this.eventHelper = eventHelper;
 		
-		// FIXME: this does not work for Sail.  We may need some consition to handle special case?
+		// FIXME: this does not work for Sail.  We may need some condition to handle special case?
 		// Automatically add the SUID as the Primary Key
-		ele.setProperty(table.getPrimaryKey().getName(), ele.getId());
-		
+		try {
+			ele.setProperty(table.getPrimaryKey().getName(), ele.getId());
+		} catch(Exception e) {
+			// TODO: What's needed for exception handling?
+			
+		}
 		//if (!table.rowExists(ele.getId())) {
 			//((ElementCyTable)table).addRow(this);
 		//}
@@ -88,12 +89,12 @@ public class ElementCyRow implements CyRow {
 		}
 		if (value == null) {
 			ele.removeProperty(columnName);
-			eventHelper.addEventPayload(null, null, null);
+			eventHelper.addEventPayload(null, null, (Class)null);
 		} else if (!table.getColumn(columnName).getType().isAssignableFrom(value.getClass()))
 			throw new IllegalArgumentException("Values of wrong type" + table.getColumn(columnName).getType() + " vs " + value.getClass() );
 		else {
 			ele.setProperty(columnName, value);
-			eventHelper.addEventPayload(null, null, null);
+			eventHelper.addEventPayload(null, null, (Class)null);
 		}
 	}
 
