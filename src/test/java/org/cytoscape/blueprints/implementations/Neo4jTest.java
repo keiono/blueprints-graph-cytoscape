@@ -80,7 +80,7 @@ public class Neo4jTest extends AbstractCyNetworkTest {
 		assertEquals(1, net.getEdgeCount());
 
 	}
-
+/*
 	@Test
 	public void testPerformance() {
 
@@ -101,6 +101,11 @@ public class Neo4jTest extends AbstractCyNetworkTest {
 		
 		// If we does not use transaction utility method, this can be minutes or hours...
 		assertTrue(2000>time);
-	}
+		
+		graphImplementation.clear();
+		
+		System.out.println("Clearing is bad...");
+		
+	}*/
 
 }

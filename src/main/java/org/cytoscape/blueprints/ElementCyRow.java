@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.cytoscape.event.CyEventHelper;
+import org.cytoscape.event.CyPayloadEvent;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.model.VirtualColumnInfo;
+import org.cytoscape.model.events.RowSetRecord;
+import org.cytoscape.model.events.RowsCreatedEvent;
 
 import com.tinkerpop.blueprints.pgm.Element;
 import com.tinkerpop.blueprints.pgm.Vertex;

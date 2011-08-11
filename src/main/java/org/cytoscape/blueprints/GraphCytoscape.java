@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,7 +171,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		nodeSUID2VertexIdMap.put(generatedID, vID);
 
 		// Wrap it as CyNode
-		final CyNode vc = new VertexCytoscape(vertex, nodeIndex, getDefaultNodeTable(), eventHelper);
+		final CyNode vc = new VertexCytoscape(generatedID, vertex, nodeIndex, getDefaultNodeTable(), eventHelper);
 		nodeMap.put(vertex, vc);
 		nodeIndexMap.put(nodeIndex++, vc);
 		return vc;
@@ -180,12 +181,12 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     public boolean removeNodes(Collection<CyNode> nodes) {
     	for(CyNode node:nodes) {
 	    	if (containsNode(node)) {
-	    		Vertex vr = graph.getVertex(node.getSUID());
+	    		Long id = Long.parseLong(nodeSUID2VertexIdMap.get(node.getSUID()).toString());
+	    		Vertex vr = graph.getVertex(id);
 	    		for (CyEdge e: getAdjacentEdgeList(nodeMap.get(vr), CyEdge.Type.ANY)) {
-	    			Edge er = graph.getEdge(e.getSUID());
-	    			edgeIndexMap.remove(e.getIndex());
-			    	edgeMap.remove(er);
+	    			removeEdges(Collections.singletonList(e));
 	    		}
+	    		nodeSUID2VertexIdMap.remove(node.getSUID());
 		    	graph.removeVertex(vr);
 		    	nodeIndexMap.remove(node.getIndex());
 		    	nodeMap.remove(vr);
@@ -199,8 +200,8 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     //Adds an Edge
     public CyEdge addEdge(CyNode source, CyNode target, boolean isDirected) {
     	if (containsNode(source) && containsNode(target)) {
-    		Vertex s = graph.getVertex(source.getSUID());
-    		Vertex t = graph.getVertex(target.getSUID());
+    		Vertex s = graph.getVertex(nodeSUID2VertexIdMap.get(source.getSUID()));
+    		Vertex t = graph.getVertex(nodeSUID2VertexIdMap.get(target.getSUID()));
     		final Edge edge = graph.addEdge(SUIDFactory.getNextSUID(),s, t, "");
     		EdgeCytoscape ec = new EdgeCytoscape(edge, edgeIndex, isDirected, source, target, getDefaultEdgeTable(), eventHelper);
     		edgeMap.put(edge,ec);
@@ -269,8 +270,8 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     public boolean containsEdge(CyNode from, CyNode to) {
     	ArrayList<CyEdge> commonCheck = new ArrayList<CyEdge>();
     	if (containsNode(from) && containsNode(to) && from != to) {
-    		Vertex f = graph.getVertex(from.getSUID());
-    		Vertex t = graph.getVertex(to.getSUID());
+    		Vertex f = graph.getVertex(nodeSUID2VertexIdMap.get(from.getSUID()));
+    		Vertex t = graph.getVertex(nodeSUID2VertexIdMap.get(to.getSUID()));
     		for(Edge e: new IterateMe<Edge>(f.getOutEdges(),f.getInEdges())){
     			CyEdge ce = edgeMap.get(e);
     			commonCheck.add(ce);
@@ -305,7 +306,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     public List<CyNode> getNeighborList(CyNode node, Type edgeType) {
     	ArrayList<CyNode> result = new ArrayList<CyNode>();
     	if (containsNode(node)) {
-	    	Vertex vertex = graph.getVertex(node.getSUID());
+	    	Vertex vertex = graph.getVertex(nodeSUID2VertexIdMap.get(node.getSUID()));
 			switch (edgeType) {
 				case OUTGOING:
 					for(Edge e: vertex.getOutEdges()) {
@@ -372,7 +373,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     public List<CyEdge> getAdjacentEdgeList(CyNode node, Type edgeType) {
     	ArrayList<CyEdge> result = new ArrayList<CyEdge>();
     	if (containsNode(node)) {
-	    	Vertex vertex = graph.getVertex(node.getSUID());
+	    	Vertex vertex = graph.getVertex(nodeSUID2VertexIdMap.get(node.getSUID()));
 			switch (edgeType) {
 				case OUTGOING:
 					for(Edge e: vertex.getOutEdges()) {
@@ -424,8 +425,8 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     	ArrayList<CyEdge> commonCheck = new ArrayList<CyEdge>();
     	ArrayList<CyEdge> result = new ArrayList<CyEdge>();
     	if (containsNode(source) && containsNode(target)) {
-    		Vertex s = graph.getVertex(source.getSUID());
-    		Vertex t = graph.getVertex(target.getSUID());
+    		Vertex s = graph.getVertex(nodeSUID2VertexIdMap.get(source.getSUID()));
+    		Vertex t = graph.getVertex(nodeSUID2VertexIdMap.get(target.getSUID()));
 			switch (edgeType) {
 				case OUTGOING:
 					for(Edge e: new IterateMe<Edge>(t.getInEdges(),s.getOutEdges())){
