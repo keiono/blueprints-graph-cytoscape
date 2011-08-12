@@ -25,10 +25,13 @@ public class VertexCytoscape implements CyNode {
 	
 	private CyEventHelper eventHelper;
 	
-	VertexCytoscape(final Vertex vertex, final int index, CyTable table, final CyEventHelper eventHelper) {
+	private final long suid;
+	
+	VertexCytoscape(final Long suid, final Vertex vertex, final int index, CyTable table, final CyEventHelper eventHelper) {
 		this.vertex = vertex;
 		this.index = index;
 		this.eventHelper = eventHelper;
+		this.suid = suid;
 		
 		row = new ElementCyRow(table, this.vertex, eventHelper);
 	}
@@ -43,7 +46,8 @@ public class VertexCytoscape implements CyNode {
 	}
 
 	public long getSUID() {
-		return Long.parseLong(vertex.getId().toString());
+		//return Long.parseLong(vertex.getId().toString());
+		return suid;
 	}
 
 	public int getIndex() {

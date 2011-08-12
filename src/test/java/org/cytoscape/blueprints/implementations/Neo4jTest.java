@@ -57,7 +57,10 @@ public class Neo4jTest extends AbstractCyNetworkTest {
 	@After
 	public void clearDB() throws Exception {
 		// Remove all nodes and edges.
+		//final CommitManager manager = TransactionalGraphHelper.createCommitManager(
+				//(TransactionalGraph) graphImplementation, 1);
 		((Neo4jGraph) graphImplementation).clear();
+		//manager.close();
 	}
 
 	@Test
@@ -80,7 +83,7 @@ public class Neo4jTest extends AbstractCyNetworkTest {
 		assertEquals(1, net.getEdgeCount());
 
 	}
-
+/*
 	@Test
 	public void testPerformance() {
 
@@ -101,6 +104,11 @@ public class Neo4jTest extends AbstractCyNetworkTest {
 		
 		// If we does not use transaction utility method, this can be minutes or hours...
 		assertTrue(2000>time);
-	}
+		
+		graphImplementation.clear();
+		
+		System.out.println("Clearing is bad...");
+		
+	}*/
 
 }
