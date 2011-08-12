@@ -22,6 +22,9 @@ public class ElementCyRow implements CyRow {
 	private final CyEventHelper eventHelper;
 	
 	ElementCyRow (final CyTable table, final Element ele, final CyEventHelper eventHelper) {
+		if(table == null)
+			throw new NullPointerException("Table is null.");
+		
 		this.ele = ele;
 		this.table = table;
 		
