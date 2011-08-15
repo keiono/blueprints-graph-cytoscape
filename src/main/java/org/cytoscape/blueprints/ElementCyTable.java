@@ -233,7 +233,7 @@ public class ElementCyTable implements CyTable {
 		if (row == null) {
 			final Element graphElement;
 			if(this.tableType == CyNode.class)
-				graphElement = graph.getVertex(primaryKeyValue);
+				graphElement = graph.getVertex(primaryKeyValue);   //Find actual index
 			else
 				graphElement = graph.getEdge(primaryKeyValue);
 			

@@ -269,12 +269,22 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     //Return List of Nodes
     public List<CyNode> getNodeList() {
     	final ArrayList<CyNode> nodeList = new ArrayList<CyNode>(nodeMap.values());
+    	for(Vertex v: graph.getVertices()) {
+    		if (!this.nodeMap.containsKey(v)) {
+    			nodeList.add(null);
+    		}
+    	}
 		return nodeList;
     }
     
     //Return List of Edges
     public List<CyEdge> getEdgeList() {
     	final ArrayList<CyEdge> edgeList = new ArrayList<CyEdge>(edgeMap.values());
+    	for(Edge e: graph.getEdges()) {
+    		if (!this.edgeMap.containsKey(e)) {
+    			edgeList.add(null);
+    		}
+    	}
 		return edgeList;
     }
     
@@ -299,6 +309,9 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 			return false;
 
 		final Object edgeID = edgeSUID2EdgeIdMap.get(edge.getSUID());
+		if (edgeID == null) {
+			return (graph.getEdge(edge.getSUID()) != null);
+		}
 		if (graph.getEdge(edgeID) == null)
 			return false;
 		else

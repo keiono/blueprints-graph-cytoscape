@@ -256,6 +256,36 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<dependency>
+            <groupId>com.tinkerpop.blueprints</groupId>
+            <artifactId>blueprints-dex-graph</artifactId>
+            <version>0.9</version>
+        </dependency>
+        
+		<dependency>
+            <groupId>edu.upc.dama</groupId>
+            <artifactId>jdex</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.tinkerpop.blueprints</groupId>
+            <artifactId>blueprints-orient-graph</artifactId>
+            <version>0.9</version>
+        </dependency>
+        
+        
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-core</artifactId>
+            <version>1.0rc4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orient-commons</artifactId>
+            <version>1.0rc4</version>
+        </dependency>
+        
 	</dependencies>
 
 
