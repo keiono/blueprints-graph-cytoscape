@@ -158,6 +158,7 @@
 			<artifactId>tinkerpop-blueprints-neo4j-graph</artifactId>
 			<version>0.9</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j</artifactId>
@@ -202,7 +203,6 @@
 		</dependency>
 
 		<!-- Graph Implementations for testing -->
-
 		
 		<dependency>
 			<groupId>org.cytoscape.wrappers</groupId>
@@ -255,6 +255,7 @@
 			<version>1.4</version>
 			<scope>test</scope>
 		</dependency>
+		
 	</dependencies>
 
 

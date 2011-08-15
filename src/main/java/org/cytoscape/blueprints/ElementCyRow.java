@@ -9,6 +9,8 @@ import org.cytoscape.model.CyColumn;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.model.VirtualColumnInfo;
+import org.cytoscape.model.events.RowSetRecord;
+import org.cytoscape.model.events.RowsSetEvent;
 
 import com.tinkerpop.blueprints.pgm.Element;
 
@@ -102,12 +104,12 @@ public class ElementCyRow implements CyRow {
 		}
 		if (value == null) {
 			ele.removeProperty(columnName);
-			eventHelper.addEventPayload(null, null, (Class)null);
+			eventHelper.addEventPayload(table, new RowSetRecord(this, columnName, null, null), RowsSetEvent.class);
 		} else if (!table.getColumn(columnName).getType().isAssignableFrom(value.getClass()))
 			throw new IllegalArgumentException("Values of wrong type" + table.getColumn(columnName).getType() + " vs " + value.getClass() );
 		else {
 			ele.setProperty(columnName, value);
-			eventHelper.addEventPayload(null, null, (Class)null);
+			eventHelper.addEventPayload(table, new RowSetRecord(this, columnName, value, value), RowsSetEvent.class);
 		}
 	}
 

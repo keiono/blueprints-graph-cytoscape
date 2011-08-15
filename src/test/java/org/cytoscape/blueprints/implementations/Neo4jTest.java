@@ -83,7 +83,7 @@ public class Neo4jTest extends AbstractCyNetworkTest {
 		assertEquals(1, net.getEdgeCount());
 
 	}
-/*
+
 	@Test
 	public void testPerformance() {
 
@@ -109,6 +109,6 @@ public class Neo4jTest extends AbstractCyNetworkTest {
 		
 		System.out.println("Clearing is bad...");
 		
-	}*/
+	}
 
 }

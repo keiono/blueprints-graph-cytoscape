@@ -268,12 +268,14 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 
     //Return List of Nodes
     public List<CyNode> getNodeList() {
-		return new ArrayList<CyNode>(nodeMap.values());
+    	final ArrayList<CyNode> nodeList = new ArrayList<CyNode>(nodeMap.values());
+		return nodeList;
     }
     
     //Return List of Edges
     public List<CyEdge> getEdgeList() {
-		return new ArrayList<CyEdge>(edgeMap.values());
+    	final ArrayList<CyEdge> edgeList = new ArrayList<CyEdge>(edgeMap.values());
+		return edgeList;
     }
     
     @Override
