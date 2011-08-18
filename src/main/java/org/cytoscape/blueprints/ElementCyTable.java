@@ -10,42 +10,94 @@ import java.util.Set;
 
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyColumn;
+import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
+import org.cytoscape.model.CyTableEntry;
+import org.cytoscape.model.SUIDFactory;
 import org.cytoscape.model.events.ColumnCreatedEvent;
 import org.cytoscape.model.events.ColumnDeletedEvent;
 import org.cytoscape.model.events.RowsCreatedEvent;
 
-public class ElementCyTable implements CyTable {
+import com.tinkerpop.blueprints.pgm.Element;
+import com.tinkerpop.blueprints.pgm.Graph;
+import com.tinkerpop.blueprints.pgm.Vertex;
 
+/**
+ * CyTable implementation created from Property Graph Model's node/edge properties.
+ *
+ */
+public class ElementCyTable implements CyTable {
+	
+	// Property graph which is storing actual data.
+	private final Graph graph;
+	
+	// Table created from property graph SHOULD be associated with Vertex or Edge. 
+	private final Class<? extends CyTableEntry> tableType;
+	
+	// This cannot be final since we need to support swap operation.
 	private long suid;
+	
+	// This may NOT be unique.
 	private String title;
+	
 	private boolean isImmutable;
+	private final boolean isPublic;
+	
+	private SavePolicy savePolicy;
+	
+	private final String primaryKeyName;
 	
 	private int virtualColumnReferences;
 	
 	final private CyEventHelper eventHelper;
 	
-	private Map<Long, CyRow> rows;
-    private Map<String, CyColumn> cols;
-    
-	
-	ElementCyTable(long id, final String title, final CyEventHelper eventHelper, final boolean isImmutable) {
-		this.suid = id;
-		rows = new HashMap<Long, CyRow>();
-		cols = new HashMap<String, CyColumn>();
-		
-		setTitle(title);
-		
-		//Create Primary Key Column
-		createColumn("Primary", Long.class, true);
-		((ElementCyColumn)getColumn("Primary")).setPrimary();
-		
-		this.isImmutable = false;
-		
+	private Map<Object, CyRow> rows;
+	private Map<String, CyColumn> cols;
+
+	/**
+	 * Creates table from {@link Graph} properties.
+	 * 
+	 * @param title
+	 * @param primaryKeyName
+	 * @param primaryKeyType
+	 * @param isPublic
+	 * @param isImmutable
+	 * @param savePolicy
+	 * @param eventHelper
+	 */
+	ElementCyTable(final Graph graph, Class<? extends CyTableEntry> tableType, final String title, final String primaryKeyName, final Class<?> primaryKeyType,
+			final boolean isPublic, final boolean isImmutable, final SavePolicy savePolicy, 	final CyEventHelper eventHelper) {
+
+		if(graph == null)
+			throw new NullPointerException("Property graph is null.");
+		if(tableType == null)
+			throw new NullPointerException("tableType is null.");
+		if(eventHelper == null)
+			throw new NullPointerException("eventHelper is null.");
 		this.eventHelper = eventHelper;
+		this.graph = graph;
+		this.tableType = tableType;
 		
-		this.virtualColumnReferences = 0;
+		// Table's session-unique ID.
+		this.suid = SUIDFactory.getNextSUID();
+		
+		this.isImmutable = isImmutable;
+		this.isPublic = isPublic;
+		this.savePolicy = savePolicy;
+		
+		this.primaryKeyName = primaryKeyName;
+		
+		rows = new HashMap<Object, CyRow>();
+		cols = new HashMap<String, CyColumn>();
+
+		setTitle(title);
+
+		// Create Primary Key Column
+		createColumn(primaryKeyName, primaryKeyType, true);
+		((ElementCyColumn) getColumn(primaryKeyName)).setPrimary();
+
+		this.virtualColumnReferences = 0;		
 	}
 	
 	@Override
@@ -55,8 +107,7 @@ public class ElementCyTable implements CyTable {
 
 	@Override
 	public boolean isPublic() {
-		// TODO Auto-generated method stub
-		return false;
+		return isPublic;
 	}
 
 	@Override
@@ -75,38 +126,51 @@ public class ElementCyTable implements CyTable {
 	}
 
 	@Override
-	public void setTitle(String title) {
+	public void setTitle(final String title) {
 		this.title = title;
-		
 	}
 
 	@Override
 	public CyColumn getPrimaryKey() {
-		return getColumn("Primary");
+		return getColumn(primaryKeyName);
 	}
 
+	/**
+	 *  {@inheritDoc}
+	 */
 	@Override
-	synchronized public CyColumn getColumn(String columnName) {
+	synchronized public CyColumn getColumn(final String columnName) {
 			return cols.get(columnName);
 	}
 
-	// Return All Columns
+	/**
+	 *  {@inheritDoc}
+	 */
+	@Override
 	public Collection<CyColumn> getColumns() {
 		return cols.values();
 	}
 
+	/**
+	 *  {@inheritDoc}
+	 */
 	@Override
-	public void deleteColumn(String columnName) {
+	public void deleteColumn(final String columnName) {
+		if(columnName == null)
+			return;
+		
 		if (getColumn(columnName) != null && getColumn(columnName).isImmutable())
 			throw new IllegalArgumentException("Cannot delete Immutable Column: " + columnName);
 		cols.remove(columnName);
-		if (eventHelper != null)
-			eventHelper.fireEvent(new ColumnDeletedEvent(this, columnName));
+		
+		eventHelper.fireEvent(new ColumnDeletedEvent(this, columnName));
 	}
 
-	@Override //Needs Type
-	public <T> void createColumn(String columnName, Class<? extends T> type,
-			boolean isImmutable) {
+	/**
+	 *  {@inheritDoc}
+	 */
+	@Override
+	public <T> void createColumn(final String columnName, Class<? extends T> type, boolean isImmutable) {
 		if (type == List.class)
 			throw new IllegalArgumentException("Use createListColumn for Lists");
 		if (columnName == null) 
@@ -123,16 +187,19 @@ public class ElementCyTable implements CyTable {
 				type == String.class) {
 			
 			cols.put(columnName, new ElementCyColumn(this, columnName, isImmutable, type, false, new ElementVirtualColumnInfo()));
-			if (eventHelper != null)
-				eventHelper.fireEvent(new ColumnCreatedEvent(this, columnName));
+			
+			eventHelper.fireEvent(new ColumnCreatedEvent(this, columnName));
 		} else {
 			throw new IllegalArgumentException("Invalid Column type");
 		}
 	}
 	
-	@Override //Needs Type
-	public <T> void createListColumn(String columnName,
-			Class<T> listElementType, boolean isImmutable) {
+	
+	/**
+	 *  {@inheritDoc}
+	 */
+	@Override
+	public <T> void createListColumn(final String columnName, Class<T> listElementType, boolean isImmutable) {
 		if (columnName == null) 
 			throw new NullPointerException("Null Column name");
 		if (listElementType == null) 
@@ -150,38 +217,53 @@ public class ElementCyTable implements CyTable {
 					eventHelper.fireEvent(new ColumnCreatedEvent(this, columnName));
 		} else {
 			throw new IllegalArgumentException("Invalid List Column type");
-			
 		}
 	}
 
-	//Returns the Row with the Specified Key
-	public CyRow getRow(Object primaryKey) {
-		if (primaryKey == null) {
+
+	/**
+	 *  {@inheritDoc}
+	 */
+	@Override
+	public CyRow getRow(final Object primaryKeyValue) {
+		if (primaryKeyValue == null)
 			throw new NullPointerException("Null Primary Key");
-		}
-		if (rows.get(primaryKey) == null) {
-			ElementCyRow newRow = new ElementCyRow(this, new DummyElement(primaryKey), eventHelper);
+
+		final CyRow row = rows.get(primaryKeyValue);
+		if (row == null) {
+			final Element graphElement;
+			if(this.tableType == CyNode.class)
+				graphElement = graph.getVertex(primaryKeyValue);   //Find actual index
+			else
+				graphElement = graph.getEdge(primaryKeyValue);
+			
+			if(graphElement == null)
+				throw new NullPointerException("No such element in the prioperty graph.");
+			
+			// FIXME: need to use actual data from property graph.
+			final ElementCyRow newRow = new ElementCyRow(this, graphElement, eventHelper);
 			addRow(newRow);
-			eventHelper.addEventPayload((CyTable)this, (Object)primaryKey, RowsCreatedEvent.class);
+			eventHelper.addEventPayload((CyTable)this, (Object)primaryKeyValue, RowsCreatedEvent.class);
 			return newRow;
-		} else {
-			return rows.get(primaryKey);
-		}
+		} else
+			return row;
 	}
 
 	//Checks if the Row with the Specified Key Exists
+	@Override
 	public boolean rowExists(Object primaryKey) {
 		return rows.containsKey(primaryKey);
 	}
 
 	//Returns A List of all Rows
+	@Override
 	public List<CyRow> getAllRows() {
 		return new ArrayList<CyRow>(rows.values());
 	}
 
 	@Override
 	public String getLastInternalError() {
-		// TODO Auto-generated method stub
+		// TODO IMPLEMENT THIS
 		return null;
 	}
 
@@ -233,14 +315,12 @@ public class ElementCyTable implements CyTable {
 
 	@Override
 	public SavePolicy getSavePolicy() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.savePolicy;
 	}
 
 	@Override
-	public void setSavePolicy(SavePolicy policy) {
-		// TODO Auto-generated method stub
-		
+	public void setSavePolicy(final SavePolicy savePolicy) {
+		this.savePolicy = savePolicy;
 	}
 	
 	//Add A CyRow to the Table
@@ -266,7 +346,7 @@ public class ElementCyTable implements CyTable {
 
 	@Override
 	public void swap(CyTable otherTable) {
-	    
+
 		final ElementCyTable other = (ElementCyTable)otherTable;
 		
 		final long tempSuid = suid;
@@ -285,7 +365,7 @@ public class ElementCyTable implements CyTable {
 		virtualColumnReferences = other.virtualColumnReferences;
 		other.virtualColumnReferences = tempVirtualColumnReferences;
 		
-		final Map<Long, CyRow> tempRows = rows;
+		final Map<Object, CyRow> tempRows = rows;
 		rows = other.rows;
 		other.rows = tempRows;
 		

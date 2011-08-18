@@ -27,7 +27,10 @@ public class VertexCytoscape implements CyNode {
 	
 	private final long suid;
 	
-	VertexCytoscape(final Long suid, final Vertex vertex, final int index, CyTable table, final CyEventHelper eventHelper) {
+	VertexCytoscape(final Long suid, final Vertex vertex, final int index, final CyTable table, final CyEventHelper eventHelper) {
+		if(table == null)
+			throw new NullPointerException("Table is null.");
+		
 		this.vertex = vertex;
 		this.index = index;
 		this.eventHelper = eventHelper;

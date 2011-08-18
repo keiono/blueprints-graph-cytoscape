@@ -6,6 +6,7 @@ import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
+import org.cytoscape.model.CyTableEntry;
 import org.cytoscape.model.SUIDFactory;
 
 import com.tinkerpop.blueprints.pgm.Edge;
@@ -26,22 +27,26 @@ public class EdgeCytoscape implements CyEdge {
 	
 	private ElementCyRow row;
 	
-	private CyEventHelper eventHelper;
 	
-	EdgeCytoscape(final Long suid, final Edge edge, final int index, final boolean isDirected, final CyNode s, final CyNode t, CyTable table, final CyEventHelper eventHelper) {
+	EdgeCytoscape(Long suid, final Edge edge, final int index, final boolean isDirected, final CyNode source,
+			final CyNode target, final CyTable table, final CyEventHelper eventHelper) {
 		this.edge = edge;
 		this.index = index;
-		this.isDirected= isDirected;
-		this.sourceNode = s;
-		this.targetNode = t;
+		this.isDirected = isDirected;
+		this.sourceNode = source;
+		this.targetNode = target;
 		this.suid = suid;
 		
-		this.eventHelper = eventHelper;
+		row = new ElementCyRow(table, this.edge, eventHelper);
 		
-		row = new ElementCyRow(table, this.edge, eventHelper);/*
-		row.set("name", "");
-		row.set("selected", false);
-		row.set("interaction", "");*/
+		// Set default table values
+		
+		row.set(CyNetwork.SELECTED, false);
+		row.set(CyEdge.INTERACTION, "-");
+		row.set(CyTableEntry.NAME,
+				source.getCyRow().get(CyTableEntry.NAME, String.class) + 
+				"(" + row.get(INTERACTION, String.class) + ")" + 
+				target.getCyRow().get(CyTableEntry.NAME, String.class));
 	}
 	
 	@Override

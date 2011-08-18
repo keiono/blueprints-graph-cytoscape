@@ -14,6 +14,8 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
+import org.cytoscape.model.CyTable.SavePolicy;
+import org.cytoscape.model.CyTableEntry;
 import org.cytoscape.model.SUIDFactory;
 
 import com.tinkerpop.blueprints.pgm.Edge;
@@ -28,6 +30,9 @@ import com.tinkerpop.blueprints.pgm.oupls.GraphSource;
  *
  */
 public class GraphCytoscape implements GraphSource, CyNetwork {
+	
+	private static final String TITLE_SUFFIX = "(Blueprints Graph)";
+	private static final String SUID = "SUID";
 	
 	private final CyEventHelper eventHelper;
 	
@@ -110,26 +115,31 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		return count;
 	}
 
-    private void initDefaultTables() {
-    	//Set Default Network Table and Columns
-    	ElementCyTable netTable = new ElementCyTable(SUIDFactory.getNextSUID(), CyNetwork.DEFAULT_ATTRS, eventHelper, false);
-    	netTable.addRow(new ElementCyRow(netTable, new DummyElement(this.getSUID()), eventHelper));
-    	netTable.createColumn("name", String.class, true);
-    	netTableManager.put(netTable.getTitle(), netTable);
-    	
-    	//Set Default Node Table and Columns
-    	ElementCyTable nodeTable = new ElementCyTable(SUIDFactory.getNextSUID(),CyNetwork.DEFAULT_ATTRS, eventHelper, false);
-    	nodeTable.createColumn("name", String.class, false);
-    	nodeTable.createColumn("selected", Boolean.class, false);
-    	nodeTableManager.put(nodeTable.getTitle(), nodeTable);
-    	
-    	//Set Default Edge Table and Columns
-    	ElementCyTable edgeTable = new ElementCyTable(SUIDFactory.getNextSUID(),CyNetwork.DEFAULT_ATTRS, eventHelper, false);
-    	edgeTable.createColumn("name", String.class, false);
-    	edgeTable.createColumn("selected", Boolean.class, false);
-    	edgeTable.createColumn("interaction", String.class, false);
-    	edgeTableManager.put(edgeTable.getTitle(), edgeTable);
-    }
+	private void initDefaultTables() {
+		
+		//FIXME: create on-memory network table
+		// Set Default Network Table and Columns
+//		final ElementCyTable netTable = new ElementCyTable(suid + " Network " + TITLE_SUFFIX, SUID, Long.class, true,
+//				false, SavePolicy.DO_NOT_SAVE, eventHelper);
+//		netTable.addRow(new ElementCyRow(netTable, new DummyElement(this.getSUID()), eventHelper));
+//		netTable.createColumn(CyTableEntry.NAME, String.class, true);
+//		netTableManager.put(CyNetwork.DEFAULT_ATTRS, netTable);
+
+		// Set Default Node Table and Columns
+		ElementCyTable nodeTable = new ElementCyTable(this.graph, CyNode.class, suid + " Node " + TITLE_SUFFIX, SUID, Long.class, true,
+				false, SavePolicy.DO_NOT_SAVE, eventHelper);
+		nodeTable.createColumn(CyTableEntry.NAME, String.class, false);
+		nodeTable.createColumn(CyNetwork.SELECTED, Boolean.class, false);
+		nodeTableManager.put(CyNetwork.DEFAULT_ATTRS, nodeTable);
+
+		// Set Default Edge Table and Columns
+		ElementCyTable edgeTable = new ElementCyTable(this.graph, CyEdge.class, suid + " Edge " + TITLE_SUFFIX, SUID, Long.class, true,
+				false, SavePolicy.DO_NOT_SAVE, eventHelper);
+		edgeTable.createColumn(CyTableEntry.NAME, String.class, false);
+		edgeTable.createColumn(CyNetwork.SELECTED, Boolean.class, false);
+		edgeTable.createColumn(CyEdge.INTERACTION, String.class, false);
+		edgeTableManager.put(CyNetwork.DEFAULT_ATTRS, edgeTable);
+	}
 
 
     //Return the Graph Object
@@ -258,12 +268,24 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 
     //Return List of Nodes
     public List<CyNode> getNodeList() {
-		return new ArrayList<CyNode>(nodeMap.values());
+    	final ArrayList<CyNode> nodeList = new ArrayList<CyNode>(nodeMap.values());
+    	for(Vertex v: graph.getVertices()) {
+    		if (!this.nodeMap.containsKey(v)) {
+    			nodeList.add(null);
+    		}
+    	}
+		return nodeList;
     }
     
     //Return List of Edges
     public List<CyEdge> getEdgeList() {
-		return new ArrayList<CyEdge>(edgeMap.values());
+    	final ArrayList<CyEdge> edgeList = new ArrayList<CyEdge>(edgeMap.values());
+    	for(Edge e: graph.getEdges()) {
+    		if (!this.edgeMap.containsKey(e)) {
+    			edgeList.add(null);
+    		}
+    	}
+		return edgeList;
     }
     
     @Override
@@ -287,6 +309,9 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 			return false;
 
 		final Object edgeID = edgeSUID2EdgeIdMap.get(edge.getSUID());
+		if (edgeID == null) {
+			return (graph.getEdge(edge.getSUID()) != null);
+		}
 		if (graph.getEdge(edgeID) == null)
 			return false;
 		else
@@ -529,7 +554,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 
     @Override
     public CyTable getDefaultNodeTable() {
-	return this.nodeTableManager.get(CyNetwork.DEFAULT_ATTRS);
+    		return this.nodeTableManager.get(CyNetwork.DEFAULT_ATTRS);
     }
 
     @Override

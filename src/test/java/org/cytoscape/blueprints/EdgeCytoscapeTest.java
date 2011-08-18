@@ -1,8 +1,13 @@
 package org.cytoscape.blueprints;
 
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.AbstractCyEdgeTest;
 import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -20,5 +25,13 @@ public class EdgeCytoscapeTest extends AbstractCyEdgeTest {
 		final Graph graph = TinkerGraphFactory.createTinkerGraph();
 		graph.clear();
 		net = new GraphCytoscape(graph, eventHelper);
+		
+		this.defaultSetUp();
+	}
+	
+	@Test
+	public void testEdgeExists() {
+		assertNotNull(eDir);
+		assertNotNull(eUndir);
 	}
 }

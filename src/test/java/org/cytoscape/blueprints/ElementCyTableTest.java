@@ -1,24 +1,38 @@
 package org.cytoscape.blueprints;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.event.DummyCyEventHelper;
 import org.cytoscape.model.AbstractCyTableTest;
+import org.cytoscape.model.CyEdge;
+import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
+import org.cytoscape.model.CyTable.SavePolicy;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.tinkerpop.blueprints.pgm.Graph;
 import com.tinkerpop.blueprints.pgm.impls.tg.TinkerGraphFactory;
-
-import static org.junit.Assert.*;
 
 public class ElementCyTableTest extends AbstractCyTableTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		eventHelper = new DummyCyEventHelper();
-		table = new ElementCyTable(1, "Table1", eventHelper, false);
-		table2 = new ElementCyTable(2, "Table2", eventHelper, false);
+		
+		MockitoAnnotations.initMocks(this);
+		
+		this.eventHelper = new DummyCyEventHelper();
+		final Graph propertyGraph = TinkerGraphFactory.createTinkerGraph();
+		table = new ElementCyTable(propertyGraph, CyNode.class, "Table1", "SUID", Long.class, true, false, SavePolicy.DO_NOT_SAVE, eventHelper);
+		table2 = new ElementCyTable(propertyGraph, CyEdge.class, "Table2", "SUID", Long.class, true, false, SavePolicy.DO_NOT_SAVE, eventHelper);
+		
 		//attrs = new ElementCyRow(table, new DummyElement(1));
 		attrs = table.getRow(1l);
 		rowSetMicroListenerWasCalled = false;

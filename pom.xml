@@ -58,7 +58,6 @@
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 				</configuration>
 			</plugin>
-			
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
@@ -134,7 +133,7 @@
 			<groupId>org.cytoscape</groupId>
 			<artifactId>model-api</artifactId>
 			<version>3.0.0-alpha6-SNAPSHOT</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
@@ -159,6 +158,7 @@
 			<artifactId>tinkerpop-blueprints-neo4j-graph</artifactId>
 			<version>0.9</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j</artifactId>
@@ -203,7 +203,6 @@
 		</dependency>
 
 		<!-- Graph Implementations for testing -->
-
 		
 		<dependency>
 			<groupId>org.cytoscape.wrappers</groupId>
@@ -256,6 +255,37 @@
 			<version>1.4</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+            <groupId>com.tinkerpop.blueprints</groupId>
+            <artifactId>blueprints-dex-graph</artifactId>
+            <version>0.9</version>
+        </dependency>
+        
+		<dependency>
+            <groupId>edu.upc.dama</groupId>
+            <artifactId>jdex</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.tinkerpop.blueprints</groupId>
+            <artifactId>blueprints-orient-graph</artifactId>
+            <version>0.9</version>
+        </dependency>
+        
+        
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-core</artifactId>
+            <version>1.0rc4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orient-commons</artifactId>
+            <version>1.0rc4</version>
+        </dependency>
+        
 	</dependencies>
 
 
