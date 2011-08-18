@@ -271,7 +271,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     	final ArrayList<CyNode> nodeList = new ArrayList<CyNode>(nodeMap.values());
     	for(Vertex v: graph.getVertices()) {
     		if (!this.nodeMap.containsKey(v)) {
-    			nodeList.add(null);
+    			nodeList.add(createNodeFromVertex(v));
     		}
     	}
 		return nodeList;
@@ -282,7 +282,7 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     	final ArrayList<CyEdge> edgeList = new ArrayList<CyEdge>(edgeMap.values());
     	for(Edge e: graph.getEdges()) {
     		if (!this.edgeMap.containsKey(e)) {
-    			edgeList.add(null);
+    			edgeList.add(createEdgeFromEdge(e));
     		}
     	}
 		return edgeList;
@@ -562,4 +562,45 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	return this.edgeTableManager.get(CyNetwork.DEFAULT_ATTRS);
     }
     
+    //Maps a Vertex
+    private CyNode createNodeFromVertex(Vertex v){
+    	// Cytoscape's SUID. This is required
+		final Long generatedID = SUIDFactory.getNextSUID();
+
+		final Object vID = v.getId();
+		nodeSUID2VertexIdMap.put(generatedID, vID);
+
+		// Wrap it as CyNode
+		final CyNode vc = new VertexCytoscape(generatedID, v, nodeIndex, getDefaultNodeTable(), eventHelper);
+		nodeMap.put(v, vc);
+		nodeIndexMap.put(nodeIndex++, vc);
+		return vc;
+    }
+    
+  //Maps an Edge
+    private CyEdge createEdgeFromEdge(Edge e){
+    	Vertex s = e.getInVertex();
+    	Vertex t = e.getOutVertex();
+    	
+    	CyNode source = nodeMap.get(s);
+    	CyNode target = nodeMap.get(t);
+    	
+    	if (!nodeMap.containsKey(s))
+    		source = createNodeFromVertex(s);
+    	if (!nodeMap.containsKey(t)) 
+    		target = createNodeFromVertex(t);
+    		
+		// Cytoscape's SUID. This is required
+		final Long generatedID = SUIDFactory.getNextSUID();
+		
+
+		final Object eID = e.getId();
+		edgeSUID2EdgeIdMap.put(generatedID, eID);
+		
+		final EdgeCytoscape ec = new EdgeCytoscape(generatedID, e, edgeIndex, true, source, target, getDefaultEdgeTable(), eventHelper);
+		edgeMap.put(e,ec);
+		edgeIndexMap.put(edgeIndex++,ec);
+		this.edgeSUID2EdgeIdMap.put(ec.getSUID(), e.getId());
+		return ec;
+    }
 }

@@ -64,6 +64,10 @@ public class GraphCytoscapeTest extends AbstractCyNetworkTest{
 	
 	@Test
 	public void testPreexistGetLists() throws Exception {
+		/*
+		for (long l = 4; l < 100000 ; l++) {
+			graph.addVertex(l);
+		}*/
 		Vertex a = graph.addVertex(1l);
 		Vertex b = graph.addVertex(2l);
 		Vertex c = graph.addVertex(3l);
