@@ -24,7 +24,6 @@ public class CreateNeo4jNetworkTask implements ValuedTask<CyNetwork> {
 	@Override
 	public CyNetwork run(TaskMonitor taskMonitor) throws Exception {
 		factory.setGraph(new Neo4jGraph(databaseLocation));
-		
 		return factory.getInstance();
 	}
 

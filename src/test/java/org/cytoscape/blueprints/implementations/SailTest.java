@@ -110,8 +110,6 @@ public class SailTest {
 		assertNotNull(v1.getProperty(propKey2));
 		System.out.println("Prop Val = " + v1.getProperty(propKey2));
 
-		
-
 	}
 	
 	@Test

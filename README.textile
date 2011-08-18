@@ -5,3 +5,7 @@ and make disk-based graph implementations, such as Neo4j, accessible from Cytosc
 
 This is a summer student project by mckgamer.
 
+h2. Current Status
+
+We are still trying to make ouplementation code to pass Cytoscape data model's test suite.  Once this phase is done, we start integrating this to Cytoscape 3 Desktop Applicaiton.
+
