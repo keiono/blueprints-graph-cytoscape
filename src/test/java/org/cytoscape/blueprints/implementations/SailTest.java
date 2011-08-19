@@ -30,6 +30,10 @@ import com.tinkerpop.blueprints.pgm.impls.neo4j.Neo4jGraph;
 import com.tinkerpop.blueprints.pgm.impls.sail.SailGraph;
 import com.tinkerpop.blueprints.pgm.impls.sail.impls.NativeStoreSailGraph;
 
+/**
+ * Test suite for Sail Native Store
+ *
+ */
 public class SailTest {
 
 	private static final String TEMP_DB = "target/sailNaitiveStore";
@@ -72,7 +76,6 @@ public class SailTest {
 
 	@Before
 	public void setup() {
-
 		MockitoAnnotations.initMocks(this);
 		net = new GraphCytoscape(graphImplementation, eventHelper);
 	}
@@ -90,6 +93,7 @@ public class SailTest {
 
 	@Test
 	public void testRDF() throws Exception {
+		// Check number of entries in the RDF Graph
 		assertEquals(100100, net.getEdgeCount());
 
 		final Vertex v1 = graphImplementation

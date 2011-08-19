@@ -26,17 +26,19 @@ import com.tinkerpop.blueprints.pgm.oupls.GraphSource;
 
 
 /**
- * "Ouplementation" of CyNetwork
- *
+ * "Ouplementation" of CyNetwork.
+ * <p>
+ * Any Blueprints' {@link Graph} object can be injected as its back end.
+ * </p>
  */
 public class GraphCytoscape implements GraphSource, CyNetwork {
 	
+	// By default, network title will contain this suffix.
 	private static final String TITLE_SUFFIX = "(Blueprints Graph)";
-	private static final String SUID = "SUID";
 	
 	private final CyEventHelper eventHelper;
 	
-	// Wrapped Bleuprints-compatible graph
+	// Wrapped Blueprints-compatible graph
 	private final Graph graph;
 
 	// Session-unique ID for this CyNetwork
@@ -142,13 +144,20 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 	}
 
 
-    //Return the Graph Object
+    /**
+     * {@inheritDoc}
+     */
+	@Override
     public Graph getGraph() {
     	return graph;
     }
 
-    //Return Network Row in Specified Table
-    public CyRow getCyRow(String tableName) {
+
+	/**
+     * {@inheritDoc}
+     */
+    @Override
+	public CyRow getCyRow(String tableName) {
     	return netTableManager.get(tableName).getRow(this.suid);
     }
 
@@ -157,13 +166,20 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     	return netTableManager.get(CyNetwork.DEFAULT_ATTRS).getRow(this.suid);
     }
     
-    //Return the SUID Of the Network
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public long getSUID() {
     	return this.suid;
     }
 
-	// Adds a Node
-	public CyNode addNode() {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CyNode addNode() {
 		// Cytoscape's SUID. This is required
 		final Long generatedID = SUIDFactory.getNextSUID();
 
@@ -205,7 +221,10 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
     	return true;
     }
 
-    //Adds an Edge
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public CyEdge addEdge(CyNode source, CyNode target, boolean isDirected) {
     	if (containsNode(source) && containsNode(target)) {
     		
@@ -288,15 +307,20 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		return edgeList;
     }
     
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
 	public boolean containsNode(final CyNode node) {
 		if(node == null)
 			return false;
 		
 		final Object vertexID = nodeSUID2VertexIdMap.get(node.getSUID());
-		if(graph.getVertex(vertexID) == null)
+		if(graph.getVertex(vertexID) == null) {
+			// FIXME: This is WRONG!  We need to search graph with given ID.
 			return false;
-		else
+		} else
 			return true;
 	}
 
