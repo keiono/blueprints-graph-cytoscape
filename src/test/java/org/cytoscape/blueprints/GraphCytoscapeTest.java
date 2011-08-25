@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.AbstractCyNetworkTest;
+import org.cytoscape.model.CyEdge;
+import org.cytoscape.model.CyNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -64,10 +66,6 @@ public class GraphCytoscapeTest extends AbstractCyNetworkTest{
 	
 	@Test
 	public void testPreexistGetLists() throws Exception {
-		/*
-		for (long l = 4; l < 100000 ; l++) {
-			graph.addVertex(l);
-		}*/
 		Vertex a = graph.addVertex(1l);
 		Vertex b = graph.addVertex(2l);
 		Vertex c = graph.addVertex(3l);
@@ -77,5 +75,20 @@ public class GraphCytoscapeTest extends AbstractCyNetworkTest{
 		Edge eb = graph.addEdge(2l, a, b, "");
 		Edge ec = graph.addEdge(3l, b, c, "");
 		assertEquals("getEdgeList() Not Syncronized with Graph",3,net.getEdgeList().size());
+	}
+	
+	@Test
+	public void testPreexistNeighbors() throws Exception {
+		Vertex a = graph.addVertex(1l);
+		Vertex b = graph.addVertex(2l);
+		Vertex c = graph.addVertex(3l);
+		Vertex d = graph.addVertex(4l);
+		CyNode t = net.getNodeList().get(0);
+		
+		Edge ea = graph.addEdge(1l, a, b, "");
+		Edge eb = graph.addEdge(2l, a, c, "");
+		Edge ec = graph.addEdge(3l, a, d, "");
+		
+		assertEquals(3, net.getNeighborList(t, CyEdge.Type.ANY).size());
 	}
 }

@@ -16,12 +16,13 @@ import com.tinkerpop.blueprints.pgm.TransactionalGraph.Conclusion;
 import com.tinkerpop.blueprints.pgm.TransactionalGraph.Mode;
 import com.tinkerpop.blueprints.pgm.Vertex;
 import com.tinkerpop.blueprints.pgm.impls.neo4j.Neo4jGraph;
+import com.tinkerpop.blueprints.pgm.impls.orientdb.OrientGraph;
 import com.tinkerpop.blueprints.pgm.util.TransactionalGraphHelper;
 import com.tinkerpop.blueprints.pgm.util.TransactionalGraphHelper.CommitManager;
 
 public class Neo4jPerformanceTest {
 
-	private static final String TEMP_DB = "target" + File.separator + "neo4jTestDB";
+	private static final String TEMP_DB = "target" + File.separator + "orientTestDB";
 	private static final int NUMBER_OF_NODES = 1000;
 	private static final int NUMBER_OF_ITERATION = 10;
 
@@ -29,7 +30,7 @@ public class Neo4jPerformanceTest {
 
 	@BeforeClass
 	public static void initialize() {
-		graphImplementation = new Neo4jGraph(TEMP_DB);
+		graphImplementation = new OrientGraph(TEMP_DB);
 		graphImplementation.setTransactionMode(Mode.MANUAL);
 		graphImplementation.startTransaction();
 		graphImplementation.clear();

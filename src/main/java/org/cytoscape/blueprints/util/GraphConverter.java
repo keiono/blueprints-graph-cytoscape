@@ -17,7 +17,7 @@ public final class GraphConverter {
 	
 	public static Graph toGraph(CyNetwork network) {
 		// TODO: Define factory interface for Blueprints graph.
-		
+		network.getNodeList();
 		return null;
 	}
 }

@@ -17,6 +17,8 @@ import org.cytoscape.model.CyTable;
 import org.cytoscape.model.CyTable.SavePolicy;
 import org.cytoscape.model.CyTableEntry;
 import org.cytoscape.model.SUIDFactory;
+import org.cytoscape.model.subnetwork.CyRootNetwork;
+import org.cytoscape.model.subnetwork.CySubNetwork;
 
 import com.tinkerpop.blueprints.pgm.Edge;
 import com.tinkerpop.blueprints.pgm.Element;
@@ -29,7 +31,7 @@ import com.tinkerpop.blueprints.pgm.oupls.GraphSource;
  * "Ouplementation" of CyNetwork
  *
  */
-public class GraphCytoscape implements GraphSource, CyNetwork {
+public class GraphCytoscape implements GraphSource, CyRootNetwork {
 	
 	private static final String TITLE_SUFFIX = "(Blueprints Graph)";
 	private static final String SUID = "SUID";
@@ -363,6 +365,9 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 				case OUTGOING:
 					for(Edge e: vertex.getOutEdges()) {
 						CyEdge ce = edgeMap.get(e);
+						if (!this.edgeMap.containsKey(e)) {
+			    			ce = createEdgeFromEdge(e);
+			    		}
 						if (ce.isDirected()) {
 							result.add(ce.getTarget());
 						}
@@ -371,6 +376,9 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 				case INCOMING:
 					for(Edge e: vertex.getInEdges()) {
 						CyEdge ce = edgeMap.get(e);
+						if (!this.edgeMap.containsKey(e)) {
+			    			ce = createEdgeFromEdge(e);
+			    		}
 						if (ce.isDirected()) {
 							result.add(ce.getSource());
 						}
@@ -379,12 +387,18 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 				case DIRECTED:
 					for(Edge e: vertex.getInEdges()) {
 						CyEdge ce = edgeMap.get(e);
+						if (!this.edgeMap.containsKey(e)) {
+			    			ce = createEdgeFromEdge(e);
+			    		}
 						if (ce.isDirected()) {
 							result.add(ce.getSource());
 						}
 					}
 					for(Edge e: vertex.getOutEdges()) {
 						CyEdge ce = edgeMap.get(e);
+						if (!this.edgeMap.containsKey(e)) {
+			    			ce = createEdgeFromEdge(e);
+			    		}
 						if (ce.isDirected() && !result.contains(ce)) {
 							result.add(ce.getTarget());
 						}
@@ -393,12 +407,18 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 				case UNDIRECTED:
 					for(Edge e: vertex.getInEdges()) {
 						CyEdge ce = edgeMap.get(e);
+						if (!this.edgeMap.containsKey(e)) {
+			    			ce = createEdgeFromEdge(e);
+			    		}
 						if (!ce.isDirected()) {
 							result.add(ce.getSource());
 						}
 					}
 					for(Edge e: vertex.getOutEdges()) {
 						CyEdge ce = edgeMap.get(e);
+						if (!this.edgeMap.containsKey(e)) {
+			    			ce = createEdgeFromEdge(e);
+			    		}
 						if (!ce.isDirected() && !result.contains(ce)) {
 							result.add(ce.getTarget());
 						}
@@ -407,10 +427,16 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 				case ANY:
 					for(Edge e: vertex.getInEdges()) {
 						CyEdge ce = edgeMap.get(e);
+						if (!this.edgeMap.containsKey(e)) {
+			    			ce = createEdgeFromEdge(e);
+			    		}
 						result.add(ce.getSource());
 					}
 					for(Edge e: vertex.getOutEdges()) {
 						CyEdge ce = edgeMap.get(e);
+						if (!this.edgeMap.containsKey(e)) {
+			    			ce = createEdgeFromEdge(e);
+			    		}
 						if (!result.contains(ce.getTarget())){
 							result.add(ce.getTarget());
 						}
@@ -593,7 +619,6 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		// Cytoscape's SUID. This is required
 		final Long generatedID = SUIDFactory.getNextSUID();
 		
-
 		final Object eID = e.getId();
 		edgeSUID2EdgeIdMap.put(generatedID, eID);
 		
@@ -603,4 +628,41 @@ public class GraphCytoscape implements GraphSource, CyNetwork {
 		this.edgeSUID2EdgeIdMap.put(ec.getSUID(), e.getId());
 		return ec;
     }
+
+	@Override
+	public CySubNetwork addSubNetwork() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CySubNetwork addSubNetwork(Iterable<CyNode> arg0,
+			Iterable<CyEdge> arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean containsNetwork(CyNetwork arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public CySubNetwork getBaseNetwork() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<CySubNetwork> getSubNetworkList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeSubNetwork(CySubNetwork arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }
