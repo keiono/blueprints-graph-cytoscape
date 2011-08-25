@@ -66,7 +66,6 @@ public class Neo4jTest extends AbstractCyNetworkTest {
 	@Test
 	public void testNeo4j() {
 		assertNotNull(this.net);
-
 	}
 
 	@Test
