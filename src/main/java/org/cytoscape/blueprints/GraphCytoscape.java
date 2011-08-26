@@ -130,14 +130,14 @@ public class GraphCytoscape implements GraphSource, CyRootNetwork {
 //		netTableManager.put(CyNetwork.DEFAULT_ATTRS, netTable);
 
 		// Set Default Node Table and Columns
-		ElementCyTable nodeTable = new ElementCyTable(this.graph, CyNode.class, suid + " Node " + TITLE_SUFFIX, SUID, Long.class, true,
+		ElementCyTable nodeTable = new ElementCyTable(this.graph, CyNode.class, suid + " Node " + TITLE_SUFFIX, Long.toString(suid), Long.class, true,
 				false, SavePolicy.DO_NOT_SAVE, eventHelper);
 		nodeTable.createColumn(CyTableEntry.NAME, String.class, false);
 		nodeTable.createColumn(CyNetwork.SELECTED, Boolean.class, false);
 		nodeTableManager.put(CyNetwork.DEFAULT_ATTRS, nodeTable);
 
 		// Set Default Edge Table and Columns
-		ElementCyTable edgeTable = new ElementCyTable(this.graph, CyEdge.class, suid + " Edge " + TITLE_SUFFIX, SUID, Long.class, true,
+		ElementCyTable edgeTable = new ElementCyTable(this.graph, CyEdge.class, suid + " Edge " + TITLE_SUFFIX, Long.toString(suid), Long.class, true,
 				false, SavePolicy.DO_NOT_SAVE, eventHelper);
 		edgeTable.createColumn(CyTableEntry.NAME, String.class, false);
 		edgeTable.createColumn(CyNetwork.SELECTED, Boolean.class, false);
