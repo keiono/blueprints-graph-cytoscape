@@ -2,11 +2,13 @@ package org.cytoscape.blueprints.task;
 
 import org.cytoscape.event.CyEventHelper;
 
+import com.tinkerpop.blueprints.pgm.impls.orientdb.OrientGraph;
+
 public class OrientDBCyNetworkFactory extends AbstractBlueprintsCyNetworkFactory {
 
-	public OrientDBCyNetworkFactory(CyEventHelper eventHelper) {
+	public OrientDBCyNetworkFactory(String orientDBURL, CyEventHelper eventHelper) {
 		super(eventHelper);
-		// TODO Auto-generated constructor stub
+		setGraph(new OrientGraph(orientDBURL));
 	}
 
 }

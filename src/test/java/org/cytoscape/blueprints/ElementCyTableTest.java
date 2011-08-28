@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.event.DummyCyEventHelper;
 import org.cytoscape.model.AbstractCyTableTest;
@@ -42,6 +44,19 @@ public class ElementCyTableTest extends AbstractCyTableTest {
 
 	@After
 	public void tearDown() throws Exception {
+	}
+	
+	@Test
+	public void testGetColumnValues3() {
+		table.createColumn("someLongs", Long.class, false);
+		final CyRow row1 = table.getRow(1L);
+		row1.set("someLongs", 15L);
+		final CyRow row2 = table.getRow(2L);
+		row2.set("someLongs", -27L);
+		final List<Long> values = table.getPrimaryKey().getValues(Long.class);
+		assertTrue(values.size() == 2);
+		assertTrue(values.contains(1L));
+		assertTrue(values.contains(2L));
 	}
 	
 	@Test
